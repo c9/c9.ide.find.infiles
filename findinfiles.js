@@ -222,21 +222,17 @@ define(function(require, exports, module) {
     
             winSearchInFiles.on("prop.visible", function(e) {
                 if (e.value) {
-                    if (trFiles)
-                        trFiles.on("afterselect", setSearchSelection);
+                    trFiles.on("afterselect", setSearchSelection);
                     setSearchSelection();
                 }
                 else {
                     if (trFiles)
-                        trFiles.removeEventListener("afterselect",
-                            setSearchSelection);
+                        trFiles.off("afterselect", setSearchSelection);
                 }
             });
 
-            tree.getElement("trFiles", function(element){
-                trFiles = element;
-                trFiles.on("afterselect", setSearchSelection);
-            });
+            trFiles = tree.tree;
+            trFiles.on("afterselect", setSearchSelection);
 
             txtSFFind.ace.session.on("change", function() {
                 if (chkSFRegEx.checked)
@@ -325,7 +321,7 @@ define(function(require, exports, module) {
                 else
                     selectedNode = getSelectedTreeNode();
 
-                var filepath = selectedNode.getAttribute("path").split("/");
+                var filepath = selectedNode.path.split("/");
 
                 name = "";
                 // get selected node in tree and set it as selection
@@ -357,11 +353,9 @@ define(function(require, exports, module) {
         }
 
         function getSelectedTreeNode() {
-            var node = trFiles ? trFiles.selected : fs.model.queryNode("folder[1]");
-            if (!node)
-                node = trFiles.xmlRoot.selectSingleNode("folder[1]");
-            while (node.tagName != "folder")
-                node = node.parentNode;
+            var node = trFiles.provider.$selectedNode || trFiles.provider.root;
+            if (node.type != "folder")
+                node = node.parent || node;
             return node;
         }
 
@@ -502,7 +496,7 @@ define(function(require, exports, module) {
             }
             if (!path) {
                 var node = getSelectedTreeNode();
-                path = node.getAttribute("path");
+                path = node.path;
             }
 
             var options = getOptions();
