@@ -224,10 +224,6 @@ define(function(require, exports, module) {
                     setSearchSelection();
                 }
                 else {
-                    var page = tabs.focussedPage;
-                    if (page)
-                        tabs.focusPage(page);
-    
                     if (trFiles)
                         trFiles.removeEventListener("afterselect",
                             setSearchSelection);
@@ -377,9 +373,7 @@ define(function(require, exports, module) {
                     winFindReplace = findreplace.getElement("winSearchReplace");
                 } catch(e) {}
                 if (winFindReplace && winFindReplace.visible) {
-                    txtSFFind.focus();
-    
-                    findreplace.toggle(-1, null, null, function(){
+                    findreplace.toggle(-1, null, true, function(){
                         toggleDialog(force, isReplace, noselect);
                     });
                     return;
@@ -392,7 +386,7 @@ define(function(require, exports, module) {
                 position = -1;
     
                 var page = tabs.focussedPage;
-                var editor = page && page.editor
+                var editor = page && page.editor;
                 if (editor && editor.type == "ace") {
                     var ace   = editor.ace;
     
