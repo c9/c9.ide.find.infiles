@@ -663,7 +663,10 @@ define(function(require, exports, module) {
     
             path = path.replace(new RegExp("^" 
                 + util.escapeRegExp(find.basePath)), "");
-    
+            
+            if (path.charAt(0) != "/")
+                path = "/" + path;
+            
             if (!path)
                 return;
                 
