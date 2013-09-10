@@ -217,7 +217,7 @@ define(function(require, exports, module) {
                 }
             }, plugin);
     
-            winSearchInFiles.on("prop.visible", function(e) {
+            winSearchInFiles.on("propVisible", function(e) {
                 if (e.value) {
                     if (trFiles)
                         trFiles.on("afterselect", setSearchSelection);
@@ -253,7 +253,7 @@ define(function(require, exports, module) {
     
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
-            chkSFRegEx.on("prop.value", function(e){
+            chkSFRegEx.on("propValue", function(e){
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
     
@@ -289,7 +289,7 @@ define(function(require, exports, module) {
             });
             
             // Offline
-            c9.on("state.change", function(e){
+            c9.on("stateChange", function(e){
                 // Online
                 if (e.state & c9.STORAGE) {
                     winSearchInFiles.enable();
