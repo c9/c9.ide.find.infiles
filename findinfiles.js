@@ -124,7 +124,7 @@ define(function(require, exports, module) {
                 }
             }, plugin);
             
-            var tab = tabs.focussedPage;
+            var tab = tabs.focussedTab;
             lastActiveAce = tab && tab.editor.type == "ace" ? tab : null;
             
             // Context Menu
@@ -385,7 +385,7 @@ define(function(require, exports, module) {
     
                 position = -1;
     
-                var tab = tabs.focussedPage;
+                var tab = tabs.focussedTab;
                 var editor = tab && tab.editor;
                 if (editor && editor.type == "ace") {
                     var ace   = editor.ace;
@@ -436,8 +436,8 @@ define(function(require, exports, module) {
 
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
-                    if (!noselect && tabs.focussedPage)
-                        tabs.focusPage(tabs.focussedPage); 
+                    if (!noselect && tabs.focussedTab)
+                        tabs.focusTab(tabs.focussedTab); 
 
                     setTimeout(function(){
                         callback
@@ -580,7 +580,7 @@ define(function(require, exports, module) {
                 else if (ddSFSelection.value == "open") {
                     var files = []
                     if (options.pattern) files.push(options.pattern);
-                    tabs.getPages().forEach(function(tab){
+                    tabs.getTabs().forEach(function(tab){
                         if (tab.path) files.push(tab.path);
                     });
                     
@@ -686,7 +686,7 @@ define(function(require, exports, module) {
                     }
                 });
                 
-                tabs.focusPage(returnFocus
+                tabs.focusTab(returnFocus
                     ? searchPanel[chkSFConsole.checked]
                     : tab);
             });
@@ -779,7 +779,7 @@ define(function(require, exports, module) {
                 });
             }
             else {
-                tabs.focusPage(tab);
+                tabs.focusTab(tab);
                 callback(null, tab);
             }
         }

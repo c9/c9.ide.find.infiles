@@ -93,7 +93,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         var findinfiles = imports.findinfiles;
         var tabs        = imports.tabs;
         
-        function getPageHtml(tab){
+        function getTabHtml(tab){
             return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
         }
         
