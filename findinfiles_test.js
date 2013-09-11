@@ -43,7 +43,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath : "plugins/c9.ide.editors/tabs",
             testing : 2
         },
-        "plugins/c9.ide.editors/tab",
+        "plugins/c9.ide.editors/pane",
         "plugins/c9.ide.editors/page",
         "plugins/c9.ide.ace/ace",
         {
@@ -94,7 +94,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         var tabs        = imports.tabs;
         
         function getPageHtml(page){
-            return page.tab.aml.getPage("editor::" + page.editorType).$ext
+            return page.pane.aml.getPage("editor::" + page.editorType).$ext
         }
         
         expect.html.setConstructor(function(page){
@@ -121,7 +121,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             });
             
             describe("open", function(){
-                it('should open a tab with just an editor', function(done) {
+                it('should open a pane with just an editor', function(done) {
                     findinfiles.toggle();
                     done();
                 });
@@ -130,7 +130,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             if (!onload.remain){
                 describe("unload", function(){
                     
-                    it('should open a tab with just an editor', function(done) {
+                    it('should open a pane with just an editor', function(done) {
                         findinfiles.unload();
                         done();
                     });
