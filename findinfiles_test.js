@@ -44,7 +44,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             testing : 2
         },
         "plugins/c9.ide.editors/pane",
-        "plugins/c9.ide.editors/page",
+        "plugins/c9.ide.editors/tab",
         "plugins/c9.ide.ace/ace",
         {
             packagePath  : "plugins/c9.ide.find.infiles/findinfiles",
@@ -93,13 +93,13 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         var findinfiles = imports.findinfiles;
         var tabs        = imports.tabs;
         
-        function getPageHtml(page){
-            return page.pane.aml.getPage("editor::" + page.editorType).$ext
+        function getPageHtml(tab){
+            return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
         }
         
-        expect.html.setConstructor(function(page){
-            if (typeof page == "object")
-                return page.$ext;
+        expect.html.setConstructor(function(tab){
+            if (typeof tab == "object")
+                return tab.$ext;
         });
         
         describe('ace', function() {

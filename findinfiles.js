@@ -117,15 +117,15 @@ define(function(require, exports, module) {
             }, plugin);
             
             tabs.on("focus", function(e){
-                if (e.page.editor.type == "ace" 
-                  && searchPanel[true] != e.page 
-                  && searchPanel[false] != e.page) {
-                    lastActiveAce = e.page;
+                if (e.tab.editor.type == "ace" 
+                  && searchPanel[true] != e.tab 
+                  && searchPanel[false] != e.tab) {
+                    lastActiveAce = e.tab;
                 }
             }, plugin);
             
-            var page = tabs.focussedPage;
-            lastActiveAce = page && page.editor.type == "ace" ? page : null;
+            var tab = tabs.focussedPage;
+            lastActiveAce = tab && tab.editor.type == "ace" ? tab : null;
             
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree) {
@@ -385,8 +385,8 @@ define(function(require, exports, module) {
     
                 position = -1;
     
-                var page = tabs.focussedPage;
-                var editor = page && page.editor;
+                var tab = tabs.focussedPage;
+                var editor = tab && tab.editor;
                 if (editor && editor.type == "ace") {
                     var ace   = editor.ace;
     
@@ -508,14 +508,14 @@ define(function(require, exports, module) {
             if (chkSFConsole.checked) 
                 console.show();
             
-            makeSearchResultsPanel(function(err, page){
+            makeSearchResultsPanel(function(err, tab){
                 if (err) {
                     console.error("Error creating search panel");
                     return;
                 }
                 
-                var editor     = page.editor;
-                var session    = page.document.getSession();
+                var editor     = tab.editor;
+                var session    = tab.document.getSession();
                 var acesession = session.session;
                 var doc        = acesession.getDocument();
                 var renderer   = editor.ace.renderer;
@@ -531,7 +531,7 @@ define(function(require, exports, module) {
                     session.searchInited = true;
                     
                     function dblclick() {
-                        if (page.isActive())
+                        if (tab.isActive())
                             launchFileFromSearch(editor.ace);
                     }
                     
@@ -559,7 +559,7 @@ define(function(require, exports, module) {
                         }
                     });
                     
-                    page.on("unload", function(){
+                    tab.on("unload", function(){
                         renderer.scroller.removeEventListener("dblclick", dblclick);
                     });
                 }
@@ -580,8 +580,8 @@ define(function(require, exports, module) {
                 else if (ddSFSelection.value == "open") {
                     var files = []
                     if (options.pattern) files.push(options.pattern);
-                    tabs.getPages().forEach(function(page){
-                        if (page.path) files.push(page.path);
+                    tabs.getPages().forEach(function(tab){
+                        if (tab.path) files.push(tab.path);
                     });
                     
                     if (!files.length) {
@@ -597,7 +597,7 @@ define(function(require, exports, module) {
                     return;
                 
                 // Set loading indicator
-                page.className.add("loading");
+                tab.className.add("loading");
                 
                 // Regexp for chrooted path 
                 var reBase = settings.getBool("user/findinfiles/@fullpath") 
@@ -623,7 +623,7 @@ define(function(require, exports, module) {
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
                     stream.on("end", function(data){
-                        page.className.remove("loading");
+                        tab.className.remove("loading");
                         appendLines(doc, "\n");
                     });
                 });
@@ -672,10 +672,10 @@ define(function(require, exports, module) {
                 path      : path,
                 active    : true,
                 document  : {}
-            }, function(err, page){
+            }, function(err, tab){
                 if (err) return;
                 
-                page.editor.setState(page.document, {
+                tab.editor.setState(tab.document, {
                     jump : {
                         row       : row,
                         column    : range.start.column - offset,
@@ -688,7 +688,7 @@ define(function(require, exports, module) {
                 
                 tabs.focusPage(returnFocus
                     ? searchPanel[chkSFConsole.checked]
-                    : page);
+                    : tab);
             });
         }
     
@@ -742,14 +742,14 @@ define(function(require, exports, module) {
     
         var searchPanel = {};
         function makeSearchResultsPanel(callback) {
-            var page = searchPanel[chkSFConsole.checked];
+            var tab = searchPanel[chkSFConsole.checked];
             
-            if (!page || !page.loaded) {
+            if (!tab || !tab.loaded) {
                 searchPanel[chkSFConsole.checked] = tabs.open({
-                    path     : "", // This allows the page to be saved
+                    path     : "", // This allows the tab to be saved
                     pane      : chkSFConsole.checked 
                         ? console.aml.selectSingleNode("pane").cloud9pane 
-                        : tabs.getTabs()[0],
+                        : tabs.getPanes()[0],
                     value    : -1,
                     active   : true,
                     document : {
@@ -768,19 +768,19 @@ define(function(require, exports, module) {
                         }
                     }, 
                     editorType : "ace"
-                }, function(err, page, done){
+                }, function(err, tab, done){
                     // Ref for appendLines
-                    var doc = page.document.getSession().session.getDocument();
-                    doc.ace = page.editor.ace;
+                    var doc = tab.document.getSession().session.getDocument();
+                    doc.ace = tab.editor.ace;
                     
-                    callback(err, page);
+                    callback(err, tab);
                     
                     done();
                 });
             }
             else {
-                tabs.focusPage(page);
-                callback(null, page);
+                tabs.focusPage(tab);
+                callback(null, tab);
             }
         }
     
