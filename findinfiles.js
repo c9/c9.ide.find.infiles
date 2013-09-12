@@ -7,7 +7,7 @@
 define(function(require, exports, module) {
     main.consumes = [
         "plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
-        "find", "anims", "menus", "tabs", "fs", "commands", "tooltip", 
+        "find", "anims", "menus", "tabManager", "fs", "commands", "tooltip", 
         "tree", "apf", "console", "preferences"
     ];
     main.provides = ["findinfiles"];
@@ -26,7 +26,7 @@ define(function(require, exports, module) {
         var console     = imports.console;
         var layout      = imports.layout;
         var tooltip     = imports.tooltip;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         var tree        = imports.tree;
         var findreplace = imports.findreplace;
         var prefs       = imports.preferences;

@@ -40,7 +40,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.ide.editors/editor",
         {
-            packagePath : "plugins/c9.ide.editors/tabs",
+            packagePath : "plugins/c9.ide.editors/tabmanager",
             testing : 2
         },
         "plugins/c9.ide.editors/pane",
@@ -79,7 +79,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["findinfiles", "tabs", "console"],
+            consumes : ["findinfiles", "tabManager", "console"],
             provides : [],
             setup    : main
         }
@@ -91,7 +91,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     
     function main(options, imports, register) {
         var findinfiles = imports.findinfiles;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         
         function getTabHtml(tab){
             return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
