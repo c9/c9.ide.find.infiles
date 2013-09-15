@@ -271,7 +271,7 @@ define(function(require, exports, module) {
                         var top = pos[1];
                         return [left, top - 16];
                     }
-                });
+                }, plugin);
             });
     
             tooltip.add(txtSFPatterns.$ext, {
@@ -286,7 +286,7 @@ define(function(require, exports, module) {
                     var top = pos[1];
                     return [left, top - 16];
                 }
-            });
+            }, plugin);
             
             // Offline
             c9.on("stateChange", function(e){
