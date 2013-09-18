@@ -266,7 +266,7 @@ define(function(require, exports, module) {
                     tooltip : tt,
                     animate : false,
                     getPosition : function(){
-                        var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                        var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = pos[0] + cb.getLeft();
                         var top = pos[1];
                         return [left, top - 16];
@@ -281,7 +281,7 @@ define(function(require, exports, module) {
                 tooltip : tt,
                 animate : false,
                 getPosition : function(){
-                    var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                    var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                     var left = pos[0] + txtSFPatterns.getLeft();
                     var top = pos[1];
                     return [left, top - 16];
