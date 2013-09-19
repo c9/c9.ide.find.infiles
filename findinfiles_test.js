@@ -15,9 +15,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             davPrefix   : "/"
         },
         
-        "plugins/c9.nodeapi/nodeapi",
         "plugins/c9.core/ext",
-        "plugins/c9.core/events",
         "plugins/c9.core/http",
         "plugins/c9.core/util",
         "plugins/c9.ide.console/console",
@@ -70,7 +68,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // Mock plugins
         {
-            consumes : ["emitter", "apf", "ui"],
+            consumes : ["apf", "ui"],
             provides : [
                 "commands", "menus", "layout", "watcher", "tree", "clipboard",
                 "save", "preferences", "anims", "gotoline", "findreplace"
