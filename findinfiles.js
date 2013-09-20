@@ -132,9 +132,9 @@ define(function(require, exports, module) {
 
             console.on("resize", function () {
                 setTimeout(function () {
-                    var page = tabs.getPages().forEach(function(page) {
-                        if (page.document.meta.searchResults)
-                            page.editor.ace.renderer.onResize(true);
+                    tabs.getTabs().forEach(function(tab) {
+                        if (tab.document.meta.searchResults)
+                            tab.editor.ace.renderer.onResize(true);
                     });
                 }, 10);
             });
