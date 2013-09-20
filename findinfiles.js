@@ -25,35 +25,35 @@ define(function(require, exports, module) {
         var findreplace = imports.findreplace;
         var prefs       = imports.preferences;
         var find        = imports.find;
-        
+
         var skin      = require("text!./skin.xml");
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
-        
+
         /***** Initialization *****/
-        
+
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit   = plugin.getEmitter();
-        
+
         var libsearch = lib(settings, execFind, toggleDialog, function(){});
-        
+
         // Make ref available for other search implementations (specifically searchreplace)
         lib.findinfiles = plugin;
-        
+
         var position, returnFocus, lastActiveAce;
         var replaceAll = false;
-    
+
         // ui elements
         var trFiles, txtSFFind, txtSFPatterns, chkSFMatchCase;
         var chkSFRegEx, txtSFReplace, chkSFWholeWords, searchRow, chkSFConsole;
         var winSearchInFiles, ddSFSelection, tooltipSearchInFiles, btnSFFind;
         var btnSFReplaceAll, btnCollapse;
-        
+
         var loaded = false;
         function load(){
             if (loaded) return false;
             loaded = true;
-    
+
             commands.addCommand({
                 name    : "searchinfiles",
                 hint    : "search for a string through all files in the current workspace",
@@ -62,12 +62,12 @@ define(function(require, exports, module) {
                     toggleDialog();
                 }
             }, plugin);
-    
+
             menus.addItemByPath("Find/~", new apf.divider(), 10000, plugin),
             menus.addItemByPath("Find/Find in Files...", new apf.item({
                 command : "searchinfiles"
             }), 20000, plugin);
-            
+
             settings.on("read", function(e){
                 settings.setDefaults("state/findinfiles", [
                     ["regex", "false"],
@@ -80,7 +80,7 @@ define(function(require, exports, module) {
                     ["clear", "true"]
                 ]);
             }, plugin);
-            
+
             prefs.add({
                "General" : {
                    position : 100,
@@ -109,7 +109,7 @@ define(function(require, exports, module) {
                    }
                }
             }, plugin);
-            
+
             tabs.on("focus", function(e){
                 if (e.tab.editor.type == "ace" 
                   && searchPanel[true] != e.tab 
@@ -129,24 +129,33 @@ define(function(require, exports, module) {
                     caption : "Search in files"
                 }), 410, plugin);
             });
+
+            console.on("resize", function () {
+                setTimeout(function () {
+                    var page = tabs.getPages().forEach(function(page) {
+                        if (page.document.meta.searchResults)
+                            page.editor.ace.renderer.onResize(true);
+                    });
+                }, 10);
+            });
         }
-        
+
         var drawn = false;
         function draw(){
             if (drawn) return;
             drawn = true;
-            
+
             // Import Skin
             ui.insertSkin({
                 name         : "searchinfiles",
                 data         : skin,
                 "media-path" : options.staticPrefix + "/images/"
             }, plugin);
-            
+
             // Create UI elements
             searchRow = layout.findParent(plugin);
             ui.insertMarkup(null, markup, plugin);
-            
+
             txtSFFind        = plugin.getElement("txtSFFind");
             txtSFPatterns    = plugin.getElement("txtSFPatterns");
             chkSFMatchCase   = plugin.getElement("chkSFMatchCase");
@@ -160,16 +169,16 @@ define(function(require, exports, module) {
             btnSFReplaceAll  = plugin.getElement("btnSFReplaceAll");
             btnCollapse      = plugin.getElement("btnCollapse");
             tooltipSearchInFiles = plugin.getElement("tooltipSearchInFiles");
-    
+
             btnSFFind.on("click", function(){ execFind(); });
             btnSFReplaceAll.on("click", function(){ execReplace(); });
             btnCollapse.on("click", function(){ toggleDialog(-1); });
-    
+
             var control;
             txtSFReplace.on("focus", function(){
                 if (control) control.stop();
                 control = {};
-                
+
                 // I'd rather use css anims, but they didn't seem to work
                 apf.tween.single(txtSFReplace.$ext.parentNode, {
                     type     : "boxFlex",
@@ -184,10 +193,10 @@ define(function(require, exports, module) {
             txtSFReplace.on("blur", function(){
                 if (txtSFReplace.getValue())
                     return;
-                
+
                 if (control) control.stop();
                 control = {};
-                
+
                 // I'd rather use css anims, but they didn't seem to work
                 apf.tween.single(txtSFReplace.$ext.parentNode, {
                     type     : "boxFlex",
@@ -199,7 +208,7 @@ define(function(require, exports, module) {
                     interval : 1
                 });
             });
-    
+
             commands.addCommand({
                 name        : "hidesearchinfiles",
                 bindKey     : {mac: "ESC", win: "ESC"},
@@ -223,34 +232,34 @@ define(function(require, exports, module) {
                             setSearchSelection);
                 }
             });
-            
+
             tree.getElement("trFiles", function(element){
                 trFiles = element;
                 trFiles.on("afterselect", setSearchSelection);
             });
-    
+
             txtSFFind.ace.session.on("change", function() {
                 if (chkSFRegEx.checked)
                     libsearch.checkRegExp(txtSFFind, tooltipSearchInFiles, winSearchInFiles);
             });
             libsearch.addSearchKeyboardHandler(txtSFFind, "searchfiles");
-    
+
             var kb = libsearch.addSearchKeyboardHandler(txtSFReplace, "replacefiles");
             kb.bindKeys({
                 "Return|Shift-Return": function(){ execReplace(); }
             });
-    
+
             kb = libsearch.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
             kb.bindKeys({
                 "Return|Shift-Return": function(){ execFind(); }
             });
-    
+
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
             chkSFRegEx.on("propValue", function(e){
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
-    
+
             var cbs = winSearchInFiles.selectNodes("//a:checkbox");
             cbs.forEach(function(cb){
                 tooltip.add(cb.$ext, {
@@ -267,7 +276,7 @@ define(function(require, exports, module) {
                     }
                 }, plugin);
             });
-    
+
             tooltip.add(txtSFPatterns.$ext, {
                 message : txtSFPatterns.label,
                 width   : "auto",
@@ -281,7 +290,7 @@ define(function(require, exports, module) {
                     return [left, top - 16];
                 }
             }, plugin);
-            
+
             // Offline
             c9.on("stateChange", function(e){
                 // Online
@@ -294,31 +303,31 @@ define(function(require, exports, module) {
                     btnCollapse.enable();
                 }
             }, plugin);
-            
+
             emit("draw");
         }
-        
+
         /***** Methods *****/
-        
+
         function setSearchSelection(e){
             var selectedNode, name;
-    
+
             if (trFiles) {
                 // If originating from an event
                 if (e && e.selected)
                     selectedNode = e.selected;
                 else
                     selectedNode = getSelectedTreeNode();
-    
+
                 var filepath = selectedNode.getAttribute("path").split("/");
-    
+
                 name = "";
                 // get selected node in tree and set it as selection
                 if (selectedNode.localName == "folder")
                     name = filepath[filepath.length - 1];
                 else if (selectedNode.localName == "file")
                     name = filepath[filepath.length - 2];
-    
+
                 if (name.length > 25)
                     name = name.substr(0, 22) + "...";
             }
@@ -326,21 +335,21 @@ define(function(require, exports, module) {
                 var path = settings.get("user/tree_selection/@path");
                 if (!path)
                     return;
-    
+
                 var p;
                 if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
                     name = p.pop();
             }
-    
-            ddSFSelection.childNodes[1].setAttribute("caption", 
+
+            ddSFSelection.childNodes[1].setAttribute("caption",
                 apf.escapeXML("Selection: " + (name || "/")));
-            
+
             if (ddSFSelection.value == "selection") {
                 ddSFSelection.setAttribute("value", "");
                 ddSFSelection.setAttribute("value", "selection");
             }
         }
-    
+
         function getSelectedTreeNode() {
             var node = trFiles ? trFiles.selected : fs.model.queryNode("folder[1]");
             if (!node)
@@ -349,21 +358,21 @@ define(function(require, exports, module) {
                 node = node.parentNode;
             return node;
         }
-    
+
         function toggleDialog(force, isReplace, noselect, callback) {
             draw();
-    
+
             tooltipSearchInFiles.$ext.style.display = "none";
-    
+
             if (!force && !winSearchInFiles.visible || force > 0) {
                 if (winSearchInFiles.visible) {
                     txtSFFind.focus();
                     txtSFFind.select();
                     return;
                 }
-    
+
                 var winFindReplace;
-                try{ 
+                try{
                     winFindReplace = findreplace.getElement("winSearchReplace");
                 } catch(e) {}
                 if (winFindReplace && winFindReplace.visible) {
@@ -372,32 +381,33 @@ define(function(require, exports, module) {
                     });
                     return;
                 }
-    
+
                 winSearchInFiles.$ext.style.overflow = "hidden";
                 winSearchInFiles.$ext.style.height =
                     winSearchInFiles.$ext.offsetHeight + "px";
-    
+
                 position = -1;
     
                 var tab = tabs.focussedTab;
                 var editor = tab && tab.editor;
+                
                 if (editor && editor.type == "ace") {
                     var ace   = editor.ace;
-    
+
                     if (!ace.selection.isEmpty()) {
                         txtSFFind.setValue(ace.getCopyText());
                         libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
                     }
                 }
-    
+
                 searchRow.appendChild(winSearchInFiles);
                 winSearchInFiles.show();
                 txtSFFind.focus();
                 txtSFFind.select();
-    
+
                 winSearchInFiles.$ext.scrollTop = 0;
                 document.body.scrollTop = 0;
-    
+
                 // Animate
                 anims.animateSplitBoxNode(winSearchInFiles, {
                     height         : winSearchInFiles.$ext.scrollHeight + "px",
@@ -406,13 +416,13 @@ define(function(require, exports, module) {
                 }, function() {
                     winSearchInFiles.$ext.style.height = "";
                 });
-                
+
                 btnCollapse.setValue(1);
             }
             else if (winSearchInFiles.visible) {
                 if (txtSFFind.getValue())
                     libsearch.saveHistory(txtSFFind.getValue(), "searchfiles");
-    
+
                 // Animate
                 winSearchInFiles.visible = false;
 
@@ -439,17 +449,17 @@ define(function(require, exports, module) {
                             : apf.layout.forceResize();
                     }, 50);
                 });
-                
+
                 btnCollapse.setValue(0);
             }
-    
+
             return false;
         }
-    
+
         function searchinfiles() {
             toggleDialog(1);
         }
-    
+
         function getOptions() {
             return {
                 query         : txtSFFind.getValue(),
@@ -462,13 +472,13 @@ define(function(require, exports, module) {
                 wholeword     : chkSFWholeWords.checked
             };
         }
-    
+
         function execReplace(){
             replaceAll = true;
             execFind();
             replaceAll = false;
         }
-    
+
         function execFind() {
             // Determine the scope of the search
             var path;
@@ -479,7 +489,7 @@ define(function(require, exports, module) {
                 var paths = settings.getJson("user/tree_selection");
                 if (!paths || !(path = paths[0]))
                     return;
-    
+
                 var p;
                 if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
                     name = p.pop();
@@ -488,18 +498,18 @@ define(function(require, exports, module) {
                 var node = getSelectedTreeNode();
                 path = node.getAttribute("path");
             }
-    
+
             var options = getOptions();
             var query   = txtSFFind.getValue();
-            
+
             options.query = query.replace(/\n/g, "\\n");
-    
+
             // even if there's text in the "replace" field, don't send it when not replacing
             if (!replaceAll)
                 options.replacement = "";
-            
+
             // Open Console
-            if (chkSFConsole.checked) 
+            if (chkSFConsole.checked)
                 console.show();
             
             makeSearchResultsPanel(function(err, tab){
@@ -513,14 +523,19 @@ define(function(require, exports, module) {
                 var acesession = session.session;
                 var doc        = acesession.getDocument();
                 var renderer   = editor.ace.renderer;
-                
+
                 if (settings.getBool("user/findinfiles/@clear"))
                     doc.setValue("");
-                
+
                 appendLines(doc, messageHeader(path, options));
-    
+
                 setHighlight(acesession, options.query);
-                
+
+                function dblclick() {
+                    if (tab.isActive())
+                        launchFileFromSearch(editor.ace);
+                }
+
                 if (!session.searchInited) {
                     session.searchInited = true;
                     
@@ -542,7 +557,7 @@ define(function(require, exports, module) {
                             return false;
                         }
                     });
-                    
+
                     editor.ace.container.addEventListener("keyup", function(e) {
                         if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
                             if (settings.getBool("user/findinfiles/@consolelaunch")) {
@@ -557,17 +572,17 @@ define(function(require, exports, module) {
                         renderer.scroller.removeEventListener("dblclick", dblclick);
                     });
                 }
-                
+
                 if (ddSFSelection.value == "active") {
-                    var filename = lastActiveAce && lastActiveAce.isActive() 
+                    var filename = lastActiveAce && lastActiveAce.isActive()
                         && lastActiveAce.path;
-                    
+
                     if (!filename) {
                         appendLines(doc, "Error: There is no active file. "
                             + "Focus the editor you want to search and try again.\n");
                         return;
                     }
-                    
+
                     options.pattern = fs.getFilename(filename);
                     options.path    = fs.getParentPath(filename);
                 }
@@ -577,19 +592,19 @@ define(function(require, exports, module) {
                     tabs.getTabs().forEach(function(tab){
                         if (tab.path) files.push(tab.path);
                     });
-                    
+
                     if (!files.length) {
                         appendLines(doc, "Error: There are no open files. "
                             + "Open some files and try again.\n");
                         return;
                     }
-                    
+
                     options.pattern = files.join(",");
                 }
-        
+
                 if (options.query.length === 0)
                     return;
-                
+
                 // Set loading indicator
                 tab.className.add("loading");
                 
@@ -597,15 +612,15 @@ define(function(require, exports, module) {
                 var reBase = settings.getBool("user/findinfiles/@fullpath") 
                     ? false
                     : new RegExp("^" + util.escapeRegExp(find.basePath), "g");
-                
+
                 options.path = path;
-                
+
                 find.findFiles(options, function(err, stream) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
                         return;
                     }
-                    
+
                     var firstRun = true;
                     stream.on("data", function(chunk){
                         if (firstRun && !settings.getBool("user/findinfiles/@scrolldown")) {
@@ -613,7 +628,7 @@ define(function(require, exports, module) {
                             editor.ace.scrollToLine(currLength, false, true);
                             firstRun = false;
                         }
-                        appendLines(doc, 
+                        appendLines(doc,
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
                     stream.on("end", function(data){
@@ -621,47 +636,47 @@ define(function(require, exports, module) {
                         appendLines(doc, "\n");
                     });
                 });
-        
+
                 libsearch.saveHistory(options.query, "searchfiles");
                 position = 0;
-        
+
                 // ide.dispatchEvent("track_action", {type: "searchinfiles"});
-            })
+            });
         }
-    
+
         function launchFileFromSearch(editor) {
             var session = editor.getSession();
             var currRow = editor.getCursorPosition().row;
-    
+
             var clickedLine = session.getLine(currRow).split(": "); // number:text
             if (clickedLine.length < 2) // some other part of the editor
                 return;
-    
+
             // "string" type is the parent filename
             while (currRow --> 0) {
                 var token = session.getTokenAt(currRow, 0);
                 if (token && token.type.indexOf("string") != -1)
                     break;
             }
-    
+
             var path = editor.getSession().getLine(currRow);
-    
+
             if (path.charAt(path.length - 1) == ":")
                 path = path.substring(0, path.length-1);
-    
-            path = path.replace(new RegExp("^" 
+
+            path = path.replace(new RegExp("^"
                 + util.escapeRegExp(find.basePath)), "");
-            
+
             if (path.charAt(0) != "/")
                 path = "/" + path;
-            
+
             if (!path)
                 return;
-                
+
             var row = parseInt(clickedLine[0], 10) - 1;
             var range = editor.getSelectionRange();
             var offset = clickedLine[0].length + 2;
-            
+
             tabs.open({
                 path      : path,
                 active    : true,
@@ -685,14 +700,14 @@ define(function(require, exports, module) {
                     : tab);
             });
         }
-    
+
         function appendLines(doc, content) {
             if (!content || (!content.length && !content.count)) // blank lines can get through
                 return;
-    
+
             if (typeof content != "string")
                 content = content.join("\n");
-    
+
             if (content.length > 0) {
                 if (!settings.getBool("user/findinfiles/@scrolldown")) {
                     doc.ace.$blockScrolling++;
@@ -703,37 +718,37 @@ define(function(require, exports, module) {
                     doc.insert({row: doc.getLength(), column: 0}, content);
             }
         }
-    
+
         function messageHeader(path, options) {
             var optionsDesc = [];
-    
+
             if (options.regexp === true)
                 optionsDesc.push("regexp");
             if (options.casesensitive === true)
                 optionsDesc.push("case sensitive");
             if (options.wholeword === true)
                 optionsDesc.push("whole word");
-    
+
             if (optionsDesc.length > 0)
                 optionsDesc = "(" + optionsDesc.join(", ") + ")";
             else
                 optionsDesc = "";
-    
+
             var replacement = "";
             if (replaceAll)
                 replacement = "', replaced as '" + options.replacement ;
-            
+
             if (ddSFSelection.value == "project")
                 path = "the entire project";
             else if (ddSFSelection.value == "active")
                 path = "the active file";
             else if (ddSFSelection.value == "open")
                 path = "all open files";
-    
-            return "Searching for '" + options.query + replacement 
+
+            return "Searching for '" + options.query + replacement
                 + "' in " + path + " " + optionsDesc + "\n\n";
         }
-    
+
         var searchPanel = {};
         function makeSearchResultsPanel(callback) {
             var tab = searchPanel[chkSFConsole.checked];
@@ -742,15 +757,19 @@ define(function(require, exports, module) {
                 searchPanel[chkSFConsole.checked] = tabs.open({
                     path     : "", // This allows the tab to be saved
                     pane      : chkSFConsole.checked 
-                        ? console.aml.selectSingleNode("pane").cloud9pane 
+                        ? console.aml.selectSingleNode("tab").cloud9pane 
                         : tabs.getPanes()[0],
                     value    : -1,
                     active   : true,
                     document : {
-                        title : "Search Results", 
+                        title : "Search Results",
+                        meta  : {
+                            searchResults: true,
+                            ignoreSave   : true
+                        },
                         "ace" : {
-                            customType : "c9search", 
-                            options    : { 
+                            customType : "c9search",
+                            options    : {
                                 // showFoldWidgets   : true,
                                 // selectionStyle    : false,
                                 // showInvisibles    : false,
@@ -760,7 +779,7 @@ define(function(require, exports, module) {
                                 wrapToView          : true
                             }
                         }
-                    }, 
+                    },
                     editorType : "ace"
                 }, function(err, tab, done){
                     // Ref for appendLines
@@ -768,7 +787,6 @@ define(function(require, exports, module) {
                     doc.ace = tab.editor.ace;
                     
                     callback(err, tab);
-                    
                     done();
                 });
             }
@@ -777,37 +795,37 @@ define(function(require, exports, module) {
                 callback(null, tab);
             }
         }
-    
+
         function setHighlight(session, query) {
             if (chkSFRegEx.checked)
                 query = new RegExp(query);
-            
+
             if (session.c9SearchHighlight)
-                session.c9SearchHighlight.setRegexp(query)
+                session.c9SearchHighlight.setRegexp(query);
             else {
                 session.highlight(query);
                 session.c9SearchHighlight = session.$searchHighlight;
-                session.$searchHighlight = null;
+                session.$searchHighlight = null;
             }
         }
-        
+
         /***** Lifecycle *****/
-        
+
         plugin.on("load", function(){
             load();
         });
         plugin.on("enable", function(){
-            
+
         });
         plugin.on("disable", function(){
-            
+
         });
         plugin.on("unload", function(){
             loaded = false;
         });
-        
+
         /***** Register and define API *****/
-        
+
         /**
          * Implements the search in files UI for Cloud9 IDE.
          * @singleton
@@ -844,7 +862,7 @@ define(function(require, exports, module) {
              */
             toggle : toggleDialog
         });
-        
+
         register(null, {
             findinfiles: plugin
         });
