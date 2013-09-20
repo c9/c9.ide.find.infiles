@@ -1,9 +1,3 @@
-/**
- * Searchinfiles Module for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
 define(function(require, exports, module) {
     main.consumes = [
         "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
@@ -815,15 +809,38 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
         
         /**
-         * Draws the file tree
-         * @event afterfilesave Fires after a file is saved
-         * @param {Object} e
-         *     node     {XMLNode} description
-         *     oldpath  {String} description
-         **/
+         * Implements the search in files UI for Cloud9 IDE.
+         * @singleton
+         */
+        /**
+         * Fetches a ui element. You can use this method both sync and async.
+         * 
+         * The search in files plugin has the following elements:
+         * 
+         * * txtSFFind - `{@link ui.textbox}`
+         * * txtSFPatterns - `{@link ui.textbox}`
+         * * chkSFMatchCase - `{@link ui.checkbox}`
+         * * chkSFRegEx - `{@link ui.checkbox}`
+         * * txtSFReplace - `{@link ui.button}`
+         * * chkSFWholeWords - `{@link ui.checkbox}`
+         * * chkSFConsole - `{@link ui.checkbox}`
+         * * ddSFSelection - `{@link ui.dropdown}`
+         * * btnSFFind - `{@link ui.button}`
+         * * winSearchInFiles - `{@link ui.window}`
+         * * btnSFReplaceAll - `{@link ui.button}`
+         * * btnCollapse - `{@link ui.button}`
+         * * tooltipSearchInFiles - `{@link ui.label}`
+         * 
+         * @method getElement
+         * @param {String}   name       the id of the element to fetch.
+         * @param {Function} [callback] the function to call when the 
+         *     element is available (could be immediately)
+         */
         plugin.freezePublicAPI({
             /**
-             * 
+             * Toggles the visibility of the search in files panel.
+             * @param {Number} force  Set to -1 to force hide the panel, 
+             *   or set to 1 to force show the panel.
              */
             toggle : toggleDialog
         });
