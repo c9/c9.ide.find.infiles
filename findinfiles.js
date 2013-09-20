@@ -132,9 +132,9 @@ define(function(require, exports, module) {
 
             console.on("resize", function () {
                 setTimeout(function () {
-                    tabs.getTabs().forEach(function(tab) {
-                        if (tab.document.meta.searchResults)
-                            tab.editor.ace.renderer.onResize(true);
+                    var tabs = getSearchResultPages();
+                    tabs.forEach(function(tab) {
+                        tab.editor.ace.renderer.onResize(true);
                     });
                 }, 10);
             });
@@ -308,6 +308,12 @@ define(function(require, exports, module) {
         }
 
         /***** Methods *****/
+
+        function getSearchResultPages() {
+            return tabs.getTabs().filter(function(tab) {
+                return tab.document.meta.searchResults;
+            });
+        }
 
         function setSearchSelection(e){
             var selectedNode, name;
@@ -606,10 +612,11 @@ define(function(require, exports, module) {
                     return;
 
                 // Set loading indicator
+                tab.className.remove("changed");
                 tab.className.add("loading");
-                
-                // Regexp for chrooted path 
-                var reBase = settings.getBool("user/findinfiles/@fullpath") 
+
+                // Regexp for chrooted path
+                var reBase = settings.getBool("user/findinfiles/@fullpath")
                     ? false
                     : new RegExp("^" + util.escapeRegExp(find.basePath), "g");
 
@@ -618,6 +625,8 @@ define(function(require, exports, module) {
                 find.findFiles(options, function(err, stream) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
+                        tab.className.remove("loading");
+                        tab.className.add("error");
                         return;
                     }
 
@@ -632,8 +641,9 @@ define(function(require, exports, module) {
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
                     stream.on("end", function(data){
+                        appendLines(doc, "\n", tab);
                         tab.className.remove("loading");
-                        appendLines(doc, "\n");
+                        tab.className.add("changed");
                     });
                 });
 
