@@ -138,9 +138,9 @@ define(function(require, exports, module) {
 
             console.on("resize", function () {
                 setTimeout(function () {
-                    var page = tabs.getPages().forEach(function(page) {
-                        if (page.document.meta.searchResults)
-                            page.editor.ace.renderer.onResize(true);
+                    var pages = getSearchResultPages();
+                    pages.forEach(function(page) {
+                        page.editor.ace.renderer.onResize(true);
                     });
                 }, 10);
             });
@@ -314,6 +314,12 @@ define(function(require, exports, module) {
         }
 
         /***** Methods *****/
+
+        function getSearchResultPages() {
+            return tabs.getPages().filter(function(page) {
+                return page.document.meta.searchResults;
+            });
+        }
 
         function setSearchSelection(e){
             var selectedNode, name;
@@ -606,6 +612,7 @@ define(function(require, exports, module) {
                     return;
 
                 // Set loading indicator
+                page.className.remove("changed");
                 page.className.add("loading");
 
                 // Regexp for chrooted path
@@ -618,6 +625,8 @@ define(function(require, exports, module) {
                 find.findFiles(options, function(err, stream) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
+                        page.className.remove("loading");
+                        page.className.add("error");
                         return;
                     }
 
@@ -632,8 +641,9 @@ define(function(require, exports, module) {
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
                     stream.on("end", function(data){
+                        appendLines(doc, "\n", page);
                         page.className.remove("loading");
-                        appendLines(doc, "\n");
+                        page.className.add("changed");
                     });
                 });
 
