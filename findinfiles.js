@@ -1,13 +1,7 @@
-/**
- * Searchinfiles Module for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
 define(function(require, exports, module) {
     main.consumes = [
-        "plugin", "c9", "util", "settings", "ui", "layout", "findreplace",
-        "find", "anims", "menus", "tabs", "fs", "commands", "tooltip",
+        "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
+        "find", "anims", "menus", "tabManager", "fs", "commands", "tooltip", 
         "tree", "apf", "console", "preferences"
     ];
     main.provides = ["findinfiles"];
@@ -16,7 +10,7 @@ define(function(require, exports, module) {
     function main(options, imports, register) {
         var c9          = imports.c9;
         var util        = imports.util;
-        var Plugin      = imports.plugin;
+        var Plugin      = imports.Plugin;
         var settings    = imports.settings;
         var ui          = imports.ui;
         var fs          = imports.fs;
@@ -26,7 +20,7 @@ define(function(require, exports, module) {
         var console     = imports.console;
         var layout      = imports.layout;
         var tooltip     = imports.tooltip;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         var tree        = imports.tree;
         var findreplace = imports.findreplace;
         var prefs       = imports.preferences;
@@ -117,16 +111,16 @@ define(function(require, exports, module) {
             }, plugin);
 
             tabs.on("focus", function(e){
-                if (e.page.editor.type == "ace"
-                  && searchPanel[true] != e.page
-                  && searchPanel[false] != e.page) {
-                    lastActiveAce = e.page;
+                if (e.tab.editor.type == "ace" 
+                  && searchPanel[true] != e.tab 
+                  && searchPanel[false] != e.tab) {
+                    lastActiveAce = e.tab;
                 }
             }, plugin);
-
-            var page = tabs.focussedPage;
-            lastActiveAce = page && page.editor.type == "ace" ? page : null;
-
+            
+            var tab = tabs.focussedTab;
+            lastActiveAce = tab && tab.editor.type == "ace" ? tab : null;
+            
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree) {
                 menus.addItemToMenu(mnuCtxTree, new apf.item({
@@ -138,9 +132,9 @@ define(function(require, exports, module) {
 
             console.on("resize", function () {
                 setTimeout(function () {
-                    var pages = getSearchResultPages();
-                    pages.forEach(function(page) {
-                        page.editor.ace.renderer.onResize(true);
+                    var tabs = getSearchResultPages();
+                    tabs.forEach(function(tab) {
+                        tab.editor.ace.renderer.onResize(true);
                     });
                 }, 10);
             });
@@ -225,8 +219,8 @@ define(function(require, exports, module) {
                     toggleDialog(-1);
                 }
             }, plugin);
-
-            winSearchInFiles.on("prop.visible", function(e) {
+    
+            winSearchInFiles.on("propVisible", function(e) {
                 if (e.value) {
                     if (trFiles)
                         trFiles.on("afterselect", setSearchSelection);
@@ -261,8 +255,8 @@ define(function(require, exports, module) {
             });
 
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
-
-            chkSFRegEx.on("prop.value", function(e){
+    
+            chkSFRegEx.on("propValue", function(e){
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
 
@@ -275,12 +269,12 @@ define(function(require, exports, module) {
                     tooltip : tt,
                     animate : false,
                     getPosition : function(){
-                        var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                        var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = pos[0] + cb.getLeft();
                         var top = pos[1];
                         return [left, top - 16];
                     }
-                });
+                }, plugin);
             });
 
             tooltip.add(txtSFPatterns.$ext, {
@@ -290,15 +284,15 @@ define(function(require, exports, module) {
                 tooltip : tt,
                 animate : false,
                 getPosition : function(){
-                    var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                    var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                     var left = pos[0] + txtSFPatterns.getLeft();
                     var top = pos[1];
                     return [left, top - 16];
                 }
-            });
+            }, plugin);
 
             // Offline
-            c9.on("state.change", function(e){
+            c9.on("stateChange", function(e){
                 // Online
                 if (e.state & c9.STORAGE) {
                     winSearchInFiles.enable();
@@ -316,8 +310,8 @@ define(function(require, exports, module) {
         /***** Methods *****/
 
         function getSearchResultPages() {
-            return tabs.getPages().filter(function(page) {
-                return page.document.meta.searchResults;
+            return tabs.getTabs().filter(function(tab) {
+                return tab.document.meta.searchResults;
             });
         }
 
@@ -399,9 +393,10 @@ define(function(require, exports, module) {
                     winSearchInFiles.$ext.offsetHeight + "px";
 
                 position = -1;
-
-                var page = tabs.focussedPage;
-                var editor = page && page.editor;
+    
+                var tab = tabs.focussedTab;
+                var editor = tab && tab.editor;
+                
                 if (editor && editor.type == "ace") {
                     var ace   = editor.ace;
 
@@ -451,8 +446,8 @@ define(function(require, exports, module) {
 
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
-                    if (!noselect && tabs.focussedPage)
-                        tabs.focusPage(tabs.focussedPage);
+                    if (!noselect && tabs.focussedTab)
+                        tabs.focusTab(tabs.focussedTab); 
 
                     setTimeout(function(){
                         callback
@@ -522,15 +517,15 @@ define(function(require, exports, module) {
             // Open Console
             if (chkSFConsole.checked)
                 console.show();
-
-            makeSearchResultsPanel(function(err, page){
+            
+            makeSearchResultsPanel(function(err, tab){
                 if (err) {
                     console.error("Error creating search panel");
                     return;
                 }
-
-                var editor     = page.editor;
-                var session    = page.document.getSession();
+                
+                var editor     = tab.editor;
+                var session    = tab.document.getSession();
                 var acesession = session.session;
                 var doc        = acesession.getDocument();
                 var renderer   = editor.ace.renderer;
@@ -543,13 +538,18 @@ define(function(require, exports, module) {
                 setHighlight(acesession, options.query);
 
                 function dblclick() {
-                    if (page.isActive())
+                    if (tab.isActive())
                         launchFileFromSearch(editor.ace);
                 }
 
                 if (!session.searchInited) {
                     session.searchInited = true;
-
+                    
+                    function dblclick() {
+                        if (tab.isActive())
+                            launchFileFromSearch(editor.ace);
+                    }
+                    
                     renderer.scroller.addEventListener("dblclick", dblclick);
                     editor.ace.container.addEventListener("keydown", function(e) {
                         if (e.keyCode == 13) { // ENTER
@@ -573,8 +573,8 @@ define(function(require, exports, module) {
                             }
                         }
                     });
-
-                    page.on("unload", function(){
+                    
+                    tab.on("unload", function(){
                         renderer.scroller.removeEventListener("dblclick", dblclick);
                     });
                 }
@@ -595,8 +595,8 @@ define(function(require, exports, module) {
                 else if (ddSFSelection.value == "open") {
                     var files = []
                     if (options.pattern) files.push(options.pattern);
-                    tabs.getPages().forEach(function(page){
-                        if (page.path) files.push(page.path);
+                    tabs.getTabs().forEach(function(tab){
+                        if (tab.path) files.push(tab.path);
                     });
 
                     if (!files.length) {
@@ -612,8 +612,8 @@ define(function(require, exports, module) {
                     return;
 
                 // Set loading indicator
-                page.className.remove("changed");
-                page.className.add("loading");
+                tab.className.remove("changed");
+                tab.className.add("loading");
 
                 // Regexp for chrooted path
                 var reBase = settings.getBool("user/findinfiles/@fullpath")
@@ -625,8 +625,8 @@ define(function(require, exports, module) {
                 find.findFiles(options, function(err, stream) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
-                        page.className.remove("loading");
-                        page.className.add("error");
+                        tab.className.remove("loading");
+                        tab.className.add("error");
                         return;
                     }
 
@@ -641,9 +641,9 @@ define(function(require, exports, module) {
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
                     stream.on("end", function(data){
-                        appendLines(doc, "\n", page);
-                        page.className.remove("loading");
-                        page.className.add("changed");
+                        appendLines(doc, "\n", tab);
+                        tab.className.remove("loading");
+                        tab.className.add("changed");
                     });
                 });
 
@@ -691,10 +691,10 @@ define(function(require, exports, module) {
                 path      : path,
                 active    : true,
                 document  : {}
-            }, function(err, page){
+            }, function(err, tab){
                 if (err) return;
-
-                page.editor.setState(page.document, {
+                
+                tab.editor.setState(tab.document, {
                     jump : {
                         row       : row,
                         column    : range.start.column - offset,
@@ -704,10 +704,10 @@ define(function(require, exports, module) {
                         }
                     }
                 });
-
-                tabs.focusPage(returnFocus
+                
+                tabs.focusTab(returnFocus
                     ? searchPanel[chkSFConsole.checked]
-                    : page);
+                    : tab);
             });
         }
 
@@ -761,14 +761,14 @@ define(function(require, exports, module) {
 
         var searchPanel = {};
         function makeSearchResultsPanel(callback) {
-            var page = searchPanel[chkSFConsole.checked];
-
-            if (!page || !page.loaded) {
+            var tab = searchPanel[chkSFConsole.checked];
+            
+            if (!tab || !tab.loaded) {
                 searchPanel[chkSFConsole.checked] = tabs.open({
-                    path     : "", // This allows the page to be saved
-                    tab      : chkSFConsole.checked
-                        ? console.aml.selectSingleNode("tab").cloud9tab
-                        : tabs.getTabs()[0],
+                    path     : "", // This allows the tab to be saved
+                    pane      : chkSFConsole.checked 
+                        ? console.aml.selectSingleNode("tab").cloud9pane 
+                        : tabs.getPanes()[0],
                     value    : -1,
                     active   : true,
                     document : {
@@ -791,19 +791,18 @@ define(function(require, exports, module) {
                         }
                     },
                     editorType : "ace"
-                }, function(err, page, done){
+                }, function(err, tab, done){
                     // Ref for appendLines
-                    var doc = page.document.getSession().session.getDocument();
-                    doc.ace = page.editor.ace;
-
-                    callback(err, page);
-
+                    var doc = tab.document.getSession().session.getDocument();
+                    doc.ace = tab.editor.ace;
+                    
+                    callback(err, tab);
                     done();
                 });
             }
             else {
-                tabs.focusPage(page);
-                callback(null, page);
+                tabs.focusTab(tab);
+                callback(null, tab);
             }
         }
 
@@ -838,15 +837,38 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
 
         /**
-         * Draws the file tree
-         * @event afterfilesave Fires after a file is saved
-         *   object:
-         *     node     {XMLNode} description
-         *     oldpath  {String} description
-         **/
+         * Implements the search in files UI for Cloud9 IDE.
+         * @singleton
+         */
+        /**
+         * Fetches a ui element. You can use this method both sync and async.
+         * 
+         * The search in files plugin has the following elements:
+         * 
+         * * txtSFFind - `{@link ui.textbox}`
+         * * txtSFPatterns - `{@link ui.textbox}`
+         * * chkSFMatchCase - `{@link ui.checkbox}`
+         * * chkSFRegEx - `{@link ui.checkbox}`
+         * * txtSFReplace - `{@link ui.button}`
+         * * chkSFWholeWords - `{@link ui.checkbox}`
+         * * chkSFConsole - `{@link ui.checkbox}`
+         * * ddSFSelection - `{@link ui.dropdown}`
+         * * btnSFFind - `{@link ui.button}`
+         * * winSearchInFiles - `{@link ui.window}`
+         * * btnSFReplaceAll - `{@link ui.button}`
+         * * btnCollapse - `{@link ui.button}`
+         * * tooltipSearchInFiles - `{@link ui.label}`
+         * 
+         * @method getElement
+         * @param {String}   name       the id of the element to fetch.
+         * @param {Function} [callback] the function to call when the 
+         *     element is available (could be immediately)
+         */
         plugin.freezePublicAPI({
             /**
-             *
+             * Toggles the visibility of the search in files panel.
+             * @param {Number} force  Set to -1 to force hide the panel, 
+             *   or set to 1 to force show the panel.
              */
             toggle : toggleDialog
         });

@@ -37,11 +37,11 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.ide.editors/editor",
         {
-            packagePath : "plugins/c9.ide.editors/tabs",
+            packagePath : "plugins/c9.ide.editors/tabmanager",
             testing : 2
         },
+        "plugins/c9.ide.editors/pane",
         "plugins/c9.ide.editors/tab",
-        "plugins/c9.ide.editors/page",
         "plugins/c9.ide.ace/ace",
         {
             packagePath  : "plugins/c9.ide.find.infiles/findinfiles",
@@ -77,7 +77,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             setup    : expect.html.mocked
         },
         {
-            consumes : ["findinfiles", "tabs", "console"],
+            consumes : ["findinfiles", "tabManager", "console"],
             provides : [],
             setup    : main
         }
@@ -89,15 +89,15 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     
     function main(options, imports, register) {
         var findinfiles = imports.findinfiles;
-        var tabs        = imports.tabs;
+        var tabs        = imports.tabManager;
         
-        function getPageHtml(page){
-            return page.tab.aml.getPage("editor::" + page.editorType).$ext
+        function getTabHtml(tab){
+            return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
         }
         
-        expect.html.setConstructor(function(page){
-            if (typeof page == "object")
-                return page.$ext;
+        expect.html.setConstructor(function(tab){
+            if (typeof tab == "object")
+                return tab.$ext;
         });
         
         describe('ace', function() {
@@ -119,7 +119,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             });
             
             describe("open", function(){
-                it('should open a tab with just an editor', function(done) {
+                it('should open a pane with just an editor', function(done) {
                     findinfiles.toggle();
                     done();
                 });
@@ -128,7 +128,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             if (!onload.remain){
                 describe("unload", function(){
                     
-                    it('should open a tab with just an editor', function(done) {
+                    it('should open a pane with just an editor', function(done) {
                         findinfiles.unload();
                         done();
                     });
