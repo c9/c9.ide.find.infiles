@@ -220,7 +220,7 @@ define(function(require, exports, module) {
                 }
             }, plugin);
     
-            winSearchInFiles.on("propVisible", function(e) {
+            winSearchInFiles.on("prop.visible", function(e) {
                 if (e.value) {
                     if (trFiles)
                         trFiles.on("afterselect", setSearchSelection);
