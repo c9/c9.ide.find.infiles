@@ -256,7 +256,7 @@ define(function(require, exports, module) {
 
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
-            chkSFRegEx.on("propValue", function(e){
+            chkSFRegEx.on("prop.value", function(e){
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
 
