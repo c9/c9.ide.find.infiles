@@ -29,6 +29,8 @@ define(function(require, exports, module) {
         var skin      = require("text!./skin.xml");
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
+        var basename  = require("path").basename;
+        var dirname   = require("path").dirname;
 
         /***** Initialization *****/
 
@@ -575,11 +577,11 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.pattern = fs.getFilename(filename);
-                    options.path    = fs.getParentPath(filename);
+                    options.pattern = basename(filename);
+                    options.path    = dirname(filename);
                 }
                 else if (ddSFSelection.value == "open") {
-                    var files = []
+                    var files = [];
                     if (options.pattern) files.push(options.pattern);
                     tabs.getTabs().forEach(function(tab){
                         if (tab.path) files.push(tab.path);
