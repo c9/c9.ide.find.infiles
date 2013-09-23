@@ -353,8 +353,8 @@ define(function(require, exports, module) {
         }
 
         function getSelectedTreeNode() {
-            var node = trFiles.provider.$selectedNode || trFiles.provider.root;
-            if (node.type != "folder")
+            var node = trFiles.selection.getCursor() || trFiles.provider.root;
+            if (node.isFolder)
                 node = node.parent || node;
             return node;
         }
