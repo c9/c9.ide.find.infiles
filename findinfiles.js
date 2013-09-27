@@ -767,7 +767,7 @@ define(function(require, exports, module) {
                 searchPanel[chkSFConsole.checked] = tabs.open({
                     path     : "", // This allows the tab to be saved
                     pane      : chkSFConsole.checked 
-                        ? console.aml.selectSingleNode("tab").cloud9pane 
+                        ? console.container.selectSingleNode("tab").cloud9pane 
                         : tabs.getPanes()[0],
                     value    : -1,
                     active   : true,
