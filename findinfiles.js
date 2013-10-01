@@ -44,7 +44,7 @@ define(function(require, exports, module) {
         var replaceAll = false;
 
         // ui elements
-        var trFiles, txtSFFind, txtSFPatterns, chkSFMatchCase;
+        var txtSFFind, txtSFPatterns, chkSFMatchCase;
         var chkSFRegEx, txtSFReplace, chkSFWholeWords, searchRow, chkSFConsole;
         var winSearchInFiles, ddSFSelection, tooltipSearchInFiles, btnSFFind;
         var btnSFReplaceAll, btnCollapse;
@@ -222,17 +222,14 @@ define(function(require, exports, module) {
     
             winSearchInFiles.on("prop.visible", function(e) {
                 if (e.value) {
-                    trFiles.on("afterselect", setSearchSelection);
+                    tree.on("select", setSearchSelection);
                     setSearchSelection();
                 }
                 else {
-                    if (trFiles)
-                        trFiles.off("afterselect", setSearchSelection);
+                    if (tree)
+                        tree.off("select", setSearchSelection);
                 }
             });
-
-            trFiles = tree.tree;
-            trFiles.on("afterselect", setSearchSelection);
 
             txtSFFind.ace.session.on("change", function() {
                 if (chkSFRegEx.checked)
@@ -312,35 +309,31 @@ define(function(require, exports, module) {
         }
 
         function setSearchSelection(e){
-            var selectedNode, name;
+            var path, node, name, parts;
 
-            if (trFiles) {
+            if (tree.selected) {
                 // If originating from an event
-                if (e && e.selected)
-                    selectedNode = e.selected;
-                else
-                    selectedNode = getSelectedTreeNode();
+                node = e && e.nodes[0] || tree.selectedNode;
+                parts = node.path.split("/");
 
-                var filepath = selectedNode.path.split("/");
-
-                name = "";
                 // get selected node in tree and set it as selection
-                if (selectedNode.localName == "folder")
-                    name = filepath[filepath.length - 1];
-                else if (selectedNode.localName == "file")
-                    name = filepath[filepath.length - 2];
+                name = "";
+                if (node.isFolder)
+                    name = parts[parts.length - 1];
+                else
+                    name = parts[parts.length - 2];
 
                 if (name.length > 25)
                     name = name.substr(0, 22) + "...";
             }
             else {
-                var path = settings.get("user/tree_selection/@path");
+                path = settings.get("user/tree_selection/@path");
                 if (!path)
                     return;
 
-                var p;
-                if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
-                    name = p.pop();
+                parts = path.split("/");
+                if ((name = parts.pop()).indexOf(".") > -1)
+                    name = parts.pop();
             }
 
             ddSFSelection.childNodes[1].setAttribute("caption",
@@ -352,11 +345,11 @@ define(function(require, exports, module) {
             }
         }
 
-        function getSelectedTreeNode() {
-            var node = trFiles.selection.getCursor() || trFiles.provider.root;
-            if (node.isFolder)
+        function getSelectedTreePath() {
+            var node = tree.selectedNode;
+            if (!node.isFolder)
                 node = node.parent || node;
-            return node;
+            return node.path;
         }
 
         function toggleDialog(force, isReplace, noselect, callback) {
@@ -485,7 +478,7 @@ define(function(require, exports, module) {
             if (ddSFSelection.value == "project") {
                 path = "/";
             }
-            else if (!trFiles) {
+            else if (!tree.selected) {
                 var paths = settings.getJson("user/tree_selection");
                 if (!paths || !(path = paths[0]))
                     return;
@@ -495,8 +488,7 @@ define(function(require, exports, module) {
                     name = p.pop();
             }
             if (!path) {
-                var node = getSelectedTreeNode();
-                path = node.path;
+                path = getSelectedTreePath();
             }
 
             var options = getOptions();
