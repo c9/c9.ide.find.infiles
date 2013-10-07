@@ -126,7 +126,7 @@ define(function(require, exports, module) {
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree) {
                 menus.addItemToMenu(mnuCtxTree, new apf.item({
-                    match   : "[file|folder]",
+                    match   : "file|folder|project",
                     command : "searchinfiles",
                     caption : "Search in files"
                 }), 410, plugin);
