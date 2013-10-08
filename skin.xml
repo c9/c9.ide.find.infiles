@@ -5,7 +5,7 @@
             .btnquicksearchnav {
                 height             : 22px;
                 cursor             : pointer;
-                position           : relative;
+                position           : absolute;
                 -moz-user-select   : none;
                 -khtml-user-select : none;
                 user-select        : none;
@@ -20,7 +20,6 @@
                 border-right: none;
                 border-left: none;
             }
-
             .btnquicksearchnav span {
                 background-position: 0 0;
                 background-repeat:no-repeat;
