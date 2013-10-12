@@ -577,8 +577,8 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.pattern = basename(filename);
-                    options.path    = dirname(filename);
+                    options.pattern = filename;
+                    // options.path    = dirname(filename);
                 }
                 else if (ddSFSelection.value == "open") {
                     var files = [];
