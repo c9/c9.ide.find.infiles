@@ -75,7 +75,9 @@ define(function(require, exports, module) {
                     ["regex", "false"],
                     ["matchcase", "false"],
                     ["wholeword", "false"],
-                    ["console", "true"],
+                    ["console", "true"]
+                ]);
+                settings.setDefaults("user/findinfiles", [
                     ["consolelaunch", "false"],
                     ["fullpath", "false"],
                     ["scrolldown", "false"],
@@ -85,7 +87,6 @@ define(function(require, exports, module) {
 
             prefs.add({
                "General" : {
-                   position : 100,
                    "Find in Files" : {
                        position : 30,
                         "Show Full Path in Results" : {
