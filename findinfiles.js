@@ -137,7 +137,7 @@ define(function(require, exports, module) {
                 setTimeout(function () {
                     var tabs = getSearchResultPages();
                     tabs.forEach(function(tab) {
-                        tab.editor.ace.renderer.onResize(true);
+                        tab.editor && tab.editor.ace.renderer.onResize(true);
                     });
                 }, 10);
             });
