@@ -330,10 +330,7 @@ define(function(require, exports, module) {
                     name = name.substr(0, 22) + "...";
             }
             else {
-                path = settings.get("user/tree_selection/@path");
-                if (!path)
-                    return;
-
+                path = settings.get("user/tree_selection/@path") || "/";
                 parts = path.split("/");
                 if ((name = parts.pop()).indexOf(".") > -1)
                     name = parts.pop();
@@ -484,11 +481,11 @@ define(function(require, exports, module) {
             else if (!tree.selected) {
                 var paths = settings.getJson("user/tree_selection");
                 if (!paths || !(path = paths[0]))
-                    return;
+                    path = "/";
 
-                var p;
-                if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
-                    name = p.pop();
+                // var p;
+                // if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
+                //     name = p.pop();
             }
             if (!path) {
                 path = getSelectedTreePath();
@@ -533,11 +530,6 @@ define(function(require, exports, module) {
 
                 if (!session.searchInited) {
                     session.searchInited = true;
-                    
-                    function dblclick() {
-                        if (tab.isActive())
-                            launchFileFromSearch(editor.ace);
-                    }
                     
                     renderer.scroller.addEventListener("dblclick", dblclick);
                     editor.ace.container.addEventListener("keydown", function(e) {
