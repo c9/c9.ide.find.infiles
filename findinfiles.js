@@ -767,8 +767,8 @@ define(function(require, exports, module) {
                             ignoreSave   : true
                         },
                         "ace" : {
-                            customType : "c9search",
-                            options    : {
+                            customSyntax : "c9search",
+                            options      : {
                                 // showFoldWidgets   : true,
                                 // selectionStyle    : false,
                                 // showInvisibles    : false,
