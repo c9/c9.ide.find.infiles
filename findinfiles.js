@@ -482,10 +482,6 @@ define(function(require, exports, module) {
                 var paths = settings.getJson("user/tree_selection");
                 if (!paths || !(path = paths[0]))
                     path = "/";
-
-                // var p;
-                // if ((name = (p = path.split("/")).pop()).indexOf(".") > -1)
-                //     name = p.pop();
             }
             if (!path) {
                 path = getSelectedTreePath();
