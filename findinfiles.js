@@ -129,15 +129,6 @@ define(function(require, exports, module) {
                     caption : "Search in files"
                 }), 410, plugin);
             });
-
-            console.on("resize", function () {
-                setTimeout(function () {
-                    var tabs = getSearchResultPages();
-                    tabs.forEach(function(tab) {
-                        tab.editor && tab.editor.ace.renderer.onResize(true);
-                    });
-                }, 10);
-            });
         }
 
         var drawn = false;
