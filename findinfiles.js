@@ -505,8 +505,6 @@ define(function(require, exports, module) {
 
                 appendLines(doc, messageHeader(path, options));
 
-                setHighlight(acesession, options.query);
-
                 function dblclick() {
                     if (tab.isActive())
                         launchFileFromSearch(editor.ace);
@@ -705,13 +703,13 @@ define(function(require, exports, module) {
                 optionsDesc.push("whole word");
 
             if (optionsDesc.length > 0)
-                optionsDesc = "(" + optionsDesc.join(", ") + ")";
+                optionsDesc = "\x01" + optionsDesc.join(", ") + "\x01";
             else
                 optionsDesc = "";
 
             var replacement = "";
             if (replaceAll)
-                replacement = "', replaced as '" + options.replacement ;
+                replacement = "\x01, replaced as \x01" + options.replacement ;
 
             if (ddSFSelection.value == "project")
                 path = "the entire project";
@@ -720,8 +718,8 @@ define(function(require, exports, module) {
             else if (ddSFSelection.value == "open")
                 path = "all open files";
 
-            return "Searching for '" + options.query + replacement
-                + "' in " + path + " " + optionsDesc + "\n\n";
+            return "Searching for \x01" + options.query + replacement
+                + "\x01 in\x01" + path + "\x01" + optionsDesc + "\n\n";
         }
 
         var searchPanel = {};
@@ -768,19 +766,6 @@ define(function(require, exports, module) {
             else {
                 tabs.focusTab(tab);
                 callback(null, tab);
-            }
-        }
-
-        function setHighlight(session, query) {
-            if (chkSFRegEx.checked)
-                query = new RegExp(query);
-
-            if (session.c9SearchHighlight)
-                session.c9SearchHighlight.setRegexp(query);
-            else {
-                session.highlight(query);
-                session.c9SearchHighlight = session.$searchHighlight;
-                session.$searchHighlight = null;
             }
         }
 
