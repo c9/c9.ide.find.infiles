@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
     main.consumes = [
         "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
-        "find", "anims", "menus", "tabManager", "fs", "commands", "tooltip", 
+        "find", "anims", "menus", "tabManager", "commands", "tooltip", 
         "tree", "apf", "console", "preferences"
     ];
     main.provides = ["findinfiles"];
@@ -13,7 +13,6 @@ define(function(require, exports, module) {
         var Plugin      = imports.Plugin;
         var settings    = imports.settings;
         var ui          = imports.ui;
-        var fs          = imports.fs;
         var anims       = imports.anims;
         var menus       = imports.menus;
         var commands    = imports.commands;
@@ -29,8 +28,6 @@ define(function(require, exports, module) {
         var skin      = require("text!./skin.xml");
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
-        var basename  = require("path").basename;
-        var dirname   = require("path").dirname;
 
         /***** Initialization *****/
 
