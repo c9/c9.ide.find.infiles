@@ -21,6 +21,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.ide.console/console",
         "plugins/c9.ide.ui/lib_apf",
         "plugins/c9.ide.ui/tooltip",
+        "plugins/c9.ide.ui/menus",
         {
             packagePath : "plugins/c9.core/settings",
             settings    : "<settings><user><general animateui='true' /></user></settings>"
