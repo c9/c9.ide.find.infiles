@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:label id="tooltipSearchInFiles" skin="tooltipLabel" visible="false" />
-    <a:bar id="winSearchInFiles" skin="basic" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
+    <a:bar id="winSearchInFiles" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
         <a:hbox class="find-and-replace" padding="5" edge="5" model="{settings.model}">
             <a:hbox class="grouped_checkbox_holder" align="start" height="27">
                 <a:checkbox id="chkSFRegEx" value="[state/findinfiles/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="27" />
