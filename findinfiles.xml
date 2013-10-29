@@ -23,7 +23,7 @@
               
             <a:codebox id="txtSFReplace" tabindex="1002" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true"/>
             <a:button id="btnSFReplaceAll" focussable="false" skin="blackbutton" width="80" height="27">Replace</a:button>
-            <a:button id="btnCollapse" skin="btn_console_open" icon="switch.png" state="true" height="27" />
+            <a:button id="btnCollapse" skin="btn_console_open"  state="true" height="27" />
         </a:hbox>
     </a:bar>
 </a:application>
