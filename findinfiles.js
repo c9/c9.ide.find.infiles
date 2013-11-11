@@ -637,8 +637,9 @@ define(function(require, exports, module) {
             if (path.charAt(path.length - 1) == ":")
                 path = path.substring(0, path.length-1);
 
-            path = path.replace(new RegExp("^"
-                + util.escapeRegExp(find.basePath)), "");
+            var basePath = find.basePath.replace(/[\\]/g, "/");
+            path = path.replace(/[\\]/g, "")
+                .replace(new RegExp("^" + util.escapeRegExp(basePath)), "");
 
             if (path.charAt(0) != "/")
                 path = "/" + path;
@@ -729,7 +730,7 @@ define(function(require, exports, module) {
             if (!tab || !tab.loaded) {
                 searchPanel[chkSFConsole.checked] = tabs.open({
                     path     : "", // This allows the tab to be saved
-                    pane      : chkSFConsole.checked 
+                    pane     : chkSFConsole.checked 
                         ? console.container.selectSingleNode("tab").cloud9pane 
                         : tabs.getPanes()[0],
                     value    : -1,
@@ -743,24 +744,20 @@ define(function(require, exports, module) {
                         "ace" : {
                             customSyntax : "c9search",
                             options      : {
-                                // showFoldWidgets   : true,
-                                // selectionStyle    : false,
-                                // showInvisibles    : false,
-                                // showPrintMargin   : false,
-                                // fadeFoldWidgets   : false,
                                 useWrapMode         : true,
                                 wrapToView          : true
                             }
                         }
                     },
-                    editorType : "ace"
+                    editorType : "ace",
+                    name: "searchResults"
                 }, function(err, tab, done){
                     // Ref for appendLines
                     var doc = tab.document.getSession().session.getDocument();
                     doc.ace = tab.editor.ace;
                     
                     callback(err, tab);
-                    done();
+                    done && done();
                 });
             }
             else {
