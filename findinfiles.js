@@ -25,7 +25,6 @@ define(function(require, exports, module) {
         var prefs       = imports.preferences;
         var find        = imports.find;
 
-        var skin      = require("text!./skin.xml");
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
 
@@ -135,13 +134,6 @@ define(function(require, exports, module) {
         function draw(){
             if (drawn) return;
             drawn = true;
-
-            // Import Skin
-            ui.insertSkin({
-                name         : "searchinfiles",
-                data         : skin,
-                "media-path" : options.staticPrefix + "/images/"
-            }, plugin);
 
             // Create UI elements
             searchRow = layout.findParent(plugin);
