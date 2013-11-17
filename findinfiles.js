@@ -57,7 +57,7 @@ define(function(require, exports, module) {
                 hint    : "search for a string through all files in the current workspace",
                 bindKey : {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
                 exec    : function () {
-                    toggleDialog();
+                    toggleDialog(1);
                 }
             }, plugin);
 
