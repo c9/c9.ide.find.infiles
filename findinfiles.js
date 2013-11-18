@@ -2,7 +2,7 @@ define(function(require, exports, module) {
     main.consumes = [
         "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
         "find", "anims", "menus", "tabManager", "commands", "tooltip", 
-        "tree", "apf", "console", "preferences"
+        "tree", "apf", "console", "preferences", "dialog.question"
     ];
     main.provides = ["findinfiles"];
     return main;
@@ -24,6 +24,7 @@ define(function(require, exports, module) {
         var findreplace = imports.findreplace;
         var prefs       = imports.preferences;
         var find        = imports.find;
+        var question    = imports["dialog.question"].show;
 
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
@@ -39,7 +40,6 @@ define(function(require, exports, module) {
         lib.findinfiles = plugin;
 
         var position, returnFocus, lastActiveAce;
-        var replaceAll = false;
 
         // ui elements
         var txtSFFind, txtSFPatterns, chkSFMatchCase;
@@ -435,24 +435,18 @@ define(function(require, exports, module) {
 
         function getOptions() {
             return {
-                query         : txtSFFind.getValue(),
-                needle        : txtSFFind.getValue(),
+                query         : txtSFFind.getValue().replace(/\\n/g, "\n"),
                 pattern       : txtSFPatterns.getValue(),
                 casesensitive : chkSFMatchCase.checked,
                 regexp        : chkSFRegEx.checked,
-                replaceAll    : replaceAll,
+                replaceAll    : false,
                 replacement   : txtSFReplace.getValue(),
-                wholeword     : chkSFWholeWords.checked
+                wholeword     : chkSFWholeWords.checked,
+                path          : getTargetFolderPath()
             };
         }
-
-        function execReplace(){
-            replaceAll = true;
-            execFind();
-            replaceAll = false;
-        }
-
-        function execFind() {
+        
+        function getTargetFolderPath() {
             // Determine the scope of the search
             var path;
             if (ddSFSelection.value == "project") {
@@ -466,15 +460,36 @@ define(function(require, exports, module) {
             if (!path) {
                 path = getSelectedTreePath();
             }
+            return path;
+        }
 
-            var options = getOptions();
-            var query   = txtSFFind.getValue();
+        function execReplace(options){
+            if (options) {
+                options.replaceAll = true;
+                execFind(options);
+                return;
+            }
+            
+            options = getOptions();
+            if (options.replacement || txtSFReplace.ace.isFocused()) {
+                execReplace(options);
+            } else {
+                question(
+                    "Replace in files",
+                    "Replace all occurrences of " + (options.query) + " in " + options.path,
+                    "Do you want continue? (This change cannot be undone)",
+                    function(all){ // Yes
+                        execReplace(options);
+                    },
+                    function(all, cancel){ // No
+                    },
+                    { all: false }
+                );
+            }
+        }
 
-            options.query = query.replace(/\n/g, "\\n");
-
-            // even if there's text in the "replace" field, don't send it when not replacing
-            if (!replaceAll)
-                options.replacement = "";
+        function execFind(options) {
+            options = options || getOptions();
 
             // Open Console
             if (chkSFConsole.checked)
@@ -495,7 +510,7 @@ define(function(require, exports, module) {
                 if (settings.getBool("user/findinfiles/@clear"))
                     doc.setValue("");
 
-                appendLines(doc, messageHeader(path, options));
+                appendLines(doc, messageHeader(options.path, options));
 
                 function dblclick() {
                     if (tab.isActive())
@@ -575,8 +590,6 @@ define(function(require, exports, module) {
                     ? false
                     : new RegExp("^" + util.escapeRegExp(find.basePath), "g");
 
-                options.path = path;
-
                 find.findFiles(options, function(err, stream) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
@@ -629,8 +642,8 @@ define(function(require, exports, module) {
             if (path.charAt(path.length - 1) == ":")
                 path = path.substring(0, path.length-1);
 
-            var basePath = find.basePath.replace(/[\\]/g, "/");
-            path = path.replace(/[\\]/g, "")
+            var basePath = find.basePath.replace(/[\\\/]+/g, "/");
+            path = path.replace(/[\\\/]+/g, "/")
                 .replace(new RegExp("^" + util.escapeRegExp(basePath)), "");
 
             if (path.charAt(0) != "/")
@@ -701,7 +714,7 @@ define(function(require, exports, module) {
                 optionsDesc = "";
 
             var replacement = "";
-            if (replaceAll)
+            if (options.replaceAll)
                 replacement = "\x01, replaced as \x01" + options.replacement ;
 
             if (ddSFSelection.value == "project")
