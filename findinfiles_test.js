@@ -1,4 +1,4 @@
-/*global describe it before after  =*/
+/*global describe it before after bar =*/
 
 "use client";
 
@@ -73,7 +73,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             provides : [
                 "commands", "menus", "layout", "watcher", "tree", "clipboard",
                 "save", "preferences", "anims", "gotoline", "findreplace",
-                "dialog.alert", "auth.bootstrap"
+                "dialog.alert", "auth.bootstrap", "dialog.question"
             ],
             setup    : expect.html.mocked
         },
@@ -82,11 +82,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             provides : [],
             setup    : main
         }
-    ], function (err, config) {
-        if (err) throw err;
-        var app = architect.createApp(config);
-        app.on("service", function(name, plugin){ plugin.name = name; });
-    });
+    ], expect.setUpArchitectTest(architect));
     
     function main(options, imports, register) {
         var findinfiles = imports.findinfiles;
@@ -143,7 +139,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                });
             }
         });
-        
+            
         onload && onload();
     }
 });
