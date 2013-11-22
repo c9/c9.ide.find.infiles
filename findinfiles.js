@@ -578,9 +578,6 @@ define(function(require, exports, module) {
                     options.pattern = files.join(",");
                 }
 
-                if (options.query.length === 0)
-                    return;
-
                 // Set loading indicator
                 tab.className.remove("changed");
                 tab.className.add("loading");
