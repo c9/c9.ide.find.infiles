@@ -6,7 +6,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
   function (architect, chai, baseProc) {
     var expect = chai.expect;
     
-    architect.resolveConfig([
+    expect.setupArchitectTest([
         {
             packagePath : "plugins/c9.core/c9",
             workspaceId : "ubuntu/ip-10-35-77-180",
@@ -82,7 +82,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             provides : [],
             setup    : main
         }
-    ], expect.setUpArchitectTest(architect));
+    ], architect);
     
     function main(options, imports, register) {
         var findinfiles = imports.findinfiles;
