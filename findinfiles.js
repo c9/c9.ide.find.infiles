@@ -730,11 +730,9 @@ define(function(require, exports, module) {
             var tab = searchPanel[chkSFConsole.checked];
             
             if (!tab || !tab.loaded) {
-                searchPanel[chkSFConsole.checked] = tabs.open({
+                var root = chkSFConsole.checked ? console : tabs;
+                searchPanel[chkSFConsole.checked] = root.open({
                     path     : "", // This allows the tab to be saved
-                    pane     : chkSFConsole.checked 
-                        ? console.container.selectSingleNode("tab").cloud9pane 
-                        : tabs.getPanes()[0],
                     value    : -1,
                     active   : true,
                     document : {
