@@ -28,7 +28,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             packagePath : "plugins/c9.core/settings",
             settings    : "<settings><user><general animateui='true' /></user></settings>"
         },
-        "plugins/c9.ide.api/api.js",
+        "plugins/c9.core/api.js",
         {
             packagePath  : "plugins/c9.ide.ui/ui",
             staticPrefix : "plugins/c9.ide.ui"
