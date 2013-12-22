@@ -501,53 +501,62 @@ define(function(require, exports, module) {
                     return;
                 }
                 
-                var editor     = tab.editor;
                 var session    = tab.document.getSession();
                 var acesession = session.session;
                 var doc        = acesession.getDocument();
-                var renderer   = editor.ace.renderer;
-
-                if (settings.getBool("user/findinfiles/@clear"))
-                    doc.setValue("");
-
-                appendLines(doc, messageHeader(options.path, options));
-
-                function dblclick() {
-                    if (tab.isActive())
-                        launchFileFromSearch(editor.ace);
-                }
-
-                if (!session.searchInited) {
-                    session.searchInited = true;
-                    
-                    renderer.scroller.addEventListener("dblclick", dblclick);
-                    editor.ace.container.addEventListener("keydown", function(e) {
+                
+                if (!acesession.searchInited) {
+                    acesession.searchInited = true;
+                    var dblclick = function() {
+                        launchFileFromSearch(doc.ace);
+                    };
+                    var onEnter = function(e) {
                         if (e.keyCode == 13) { // ENTER
                             if (e.altKey === false) {
-                                launchFileFromSearch(editor.ace);
+                                launchFileFromSearch(doc.ace);
                                 returnFocus = false;
                             }
                             else {
-                                editor.insert("\n");
+                                doc.ace.insert("\n");
                             }
-                            return false;
+                            e.preventDefault();
+                            e.stopPropagation();
                         }
-                    });
-
-                    editor.ace.container.addEventListener("keyup", function(e) {
+                    };
+                    var onKeyup = function(e) {
                         if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
                             if (settings.getBool("user/findinfiles/@consolelaunch")) {
-                                launchFileFromSearch(editor.ace);
+                                launchFileFromSearch(doc.ace);
                                 returnFocus = true;
                                 return false;
                             }
                         }
-                    });
-                    
-                    tab.on("unload", function(){
-                        renderer.scroller.removeEventListener("dblclick", dblclick);
-                    });
+                    };
+                
+                    var updateEditorEventListeners = function(e){
+                        if (e.oldEditor) {
+                            e.oldEditor.container.removeEventListener("dblclick", dblclick);
+                            e.oldEditor.container.removeEventListener("keydown", onEnter);
+                            e.oldEditor.container.removeEventListener("keyup", onKeyup);
+                        }
+                        
+                        if (e.editor) {
+                            e.editor.container.addEventListener("keydown", onEnter);
+                            e.editor.container.addEventListener("keyup", onKeyup);
+                            e.editor.container.addEventListener("dblclick", dblclick);
+                            // Ref for appendLines
+                            doc.ace = e.editor;
+                        }
+                    };
+                        
+                    acesession.on("changeEditor", updateEditorEventListeners);
+                    updateEditorEventListeners({editor: tab.editor.ace});
                 }
+                
+                if (settings.getBool("user/findinfiles/@clear"))
+                    doc.setValue("");
+
+                appendLines(doc, messageHeader(options.path, options));
 
                 if (ddSFSelection.value == "active") {
                     var filename = lastActiveAce && lastActiveAce.isActive()
@@ -599,7 +608,7 @@ define(function(require, exports, module) {
                     stream.on("data", function(chunk){
                         if (firstRun && !settings.getBool("user/findinfiles/@scrolldown")) {
                             var currLength = doc.getLength() - 3; // the distance to the last message
-                            editor.ace.scrollToLine(currLength, false, true);
+                            doc.ace.scrollToLine(currLength, false, true);
                             firstRun = false;
                         }
                         appendLines(doc,
@@ -752,10 +761,6 @@ define(function(require, exports, module) {
                     editorType : "ace",
                     name: "searchResults"
                 }, function(err, tab, done){
-                    // Ref for appendLines
-                    var doc = tab.document.getSession().session.getDocument();
-                    doc.ace = tab.editor.ace;
-                    
                     callback(err, tab);
                     done && done();
                 });
