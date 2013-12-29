@@ -658,8 +658,8 @@ define(function(require, exports, module) {
             if (!path)
                 return;
 
-            var row = parseInt(clickedLine[0], 10) - 1;
-            var range = editor.getSelectionRange();
+            var row    = parseInt(clickedLine[0], 10) - 1;
+            var range  = editor.getSelectionRange();
             var offset = clickedLine[0].length + 2;
 
             tabs.open({
@@ -738,14 +738,15 @@ define(function(require, exports, module) {
             if (!tab || !tab.loaded) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
-                    path     : "", // This allows the tab to be saved
+                    path     : "/searchresults.txt", // This allows the tab to be saved
                     value    : -1,
                     active   : true,
                     document : {
                         title : "Search Results",
                         meta  : {
                             searchResults: true,
-                            ignoreSave   : true
+                            ignoreSave   : true,
+                            newfile      : true
                         },
                         "ace" : {
                             customSyntax : "c9search",
