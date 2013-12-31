@@ -39,7 +39,7 @@ define(function(require, exports, module) {
         // Make ref available for other search implementations (specifically searchreplace)
         lib.findinfiles = plugin;
 
-        var position, lastActiveAce;
+        var position, returnFocus, lastActiveAce;
 
         // ui elements
         var txtSFFind, txtSFPatterns, chkSFMatchCase;
@@ -513,7 +513,8 @@ define(function(require, exports, module) {
                     var onEnter = function(e) {
                         if (e.keyCode == 13) { // ENTER
                             if (e.altKey === false) {
-                                launchFileFromSearch(doc.ace, !e.shiftKey);
+                                launchFileFromSearch(doc.ace);
+                                returnFocus = false;
                             }
                             else {
                                 doc.ace.insert("\n");
@@ -525,7 +526,8 @@ define(function(require, exports, module) {
                     var onKeyup = function(e) {
                         if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
                             if (settings.getBool("user/findinfiles/@consolelaunch")) {
-                                launchFileFromSearch(doc.ace, false);
+                                launchFileFromSearch(doc.ace);
+                                returnFocus = true;
                                 return false;
                             }
                         }
@@ -626,9 +628,7 @@ define(function(require, exports, module) {
             });
         }
 
-        function launchFileFromSearch(editor, focus) {
-            if (focus === undefined)
-                focus = true;
+        function launchFileFromSearch(editor) {
             var session = editor.getSession();
             var currRow = editor.getCursorPosition().row;
 
@@ -665,21 +665,24 @@ define(function(require, exports, module) {
             tabs.open({
                 path      : path,
                 active    : true,
-                focus     : focus,
-                document  : {
-                    ace: {
-                        jump : {
-                            row       : row,
-                            column    : range.start.column - offset,
-                            select    : {
-                                row    : row,
-                                column : range.end.column - offset
-                            }
-                        }
-                    }
-                }
+                document  : {}
             }, function(err, tab){
                 if (err) return;
+                
+                tab.editor.setState(tab.document, {
+                    jump : {
+                        row       : row,
+                        column    : range.start.column - offset,
+                        select    : {
+                            row    : row,
+                            column : range.end.column - offset
+                        }
+                    }
+                });
+                
+                tabs.focusTab(returnFocus
+                    ? searchPanel[chkSFConsole.checked]
+                    : tab);
             });
         }
 
