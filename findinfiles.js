@@ -45,7 +45,7 @@ define(function(require, exports, module) {
         var txtSFFind, txtSFPatterns, chkSFMatchCase;
         var chkSFRegEx, txtSFReplace, chkSFWholeWords, searchRow, chkSFConsole;
         var winSearchInFiles, ddSFSelection, tooltipSearchInFiles, btnSFFind;
-        var btnSFReplaceAll, btnCollapse;
+        var btnSFReplaceAll, btnCollapse, currentProcess;
 
         var loaded = false;
         function load(){
@@ -594,13 +594,18 @@ define(function(require, exports, module) {
                     ? false
                     : new RegExp("^" + util.escapeRegExp(find.basePath), "g");
 
-                find.findFiles(options, function(err, stream) {
+                if (currentProcess)
+                    currentProcess.kill();
+                
+                find.findFiles(options, function(err, stream, process) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
                         tab.className.remove("loading");
                         tab.className.add("error");
                         return;
                     }
+                    
+                    currentProcess = process;
 
                     var firstRun = true;
                     stream.on("data", function(chunk){
@@ -616,6 +621,8 @@ define(function(require, exports, module) {
                         appendLines(doc, "\n", tab);
                         tab.className.remove("loading");
                         tab.className.add("changed");
+                        
+                        currentProcess = null;
                     });
                 });
 
@@ -744,9 +751,9 @@ define(function(require, exports, module) {
                     document : {
                         title : "Search Results",
                         meta  : {
-                            searchResults: true,
-                            ignoreSave   : true,
-                            newfile      : true
+                            searchResults : true,
+                            ignoreSave    : true,
+                            newfile       : true
                         },
                         "ace" : {
                             customSyntax : "c9search",
@@ -759,6 +766,11 @@ define(function(require, exports, module) {
                     editorType : "ace",
                     name: "searchResults"
                 }, function(err, tab, done){
+                    tab.on("unload", function(){
+                        if (currentProcess)
+                            currentProcess.kill();
+                    })
+                    
                     callback(err, tab);
                     done && done();
                 });
