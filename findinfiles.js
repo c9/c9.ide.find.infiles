@@ -21,7 +21,6 @@ define(function(require, exports, module) {
         var tooltip     = imports.tooltip;
         var tabs        = imports.tabManager;
         var tree        = imports.tree;
-        var findreplace = imports.findreplace;
         var prefs       = imports.preferences;
         var find        = imports.find;
         var question    = imports["dialog.question"].show;
@@ -344,16 +343,9 @@ define(function(require, exports, module) {
                     return;
                 }
 
-                var winFindReplace;
-                try{
-                    winFindReplace = findreplace.getElement("winSearchReplace");
-                } catch(e) {}
-                if (winFindReplace && winFindReplace.visible) {
-                    findreplace.toggle(-1, null, true, function(){
-                        toggleDialog(force, isReplace, noselect);
-                    });
-                    return;
-                }
+                if (layout.clearFindArea(plugin, function(){
+                    toggleDialog(force, isReplace, noselect);
+                })) return;
 
                 winSearchInFiles.$ext.style.overflow = "hidden";
                 winSearchInFiles.$ext.style.height =
@@ -769,7 +761,7 @@ define(function(require, exports, module) {
                     tab.on("unload", function(){
                         if (currentProcess)
                             currentProcess.kill();
-                    })
+                    });
                     
                     callback(err, tab);
                     done && done();
@@ -827,6 +819,11 @@ define(function(require, exports, module) {
          *     element is available (could be immediately)
          */
         plugin.freezePublicAPI({
+            /**
+             * 
+             */
+            get aml(){ return winSearchInFiles; },
+            
             /**
              * Toggles the visibility of the search in files panel.
              * @param {Number} force  Set to -1 to force hide the panel, 
