@@ -337,23 +337,25 @@ define(function(require, exports, module) {
             tooltipSearchInFiles.$ext.style.display = "none";
 
             if (!force && !winSearchInFiles.visible || force > 0) {
-                if (winSearchInFiles.visible) {
+                if (winSearchInFiles.visible && force != 2) {
                     txtSFFind.focus();
                     txtSFFind.select();
                     return;
                 }
-
-                if (layout.clearFindArea(plugin, function(){
-                    toggleDialog(force, isReplace, noselect);
-                })) return;
-
+                
                 winSearchInFiles.$ext.style.overflow = "hidden";
                 winSearchInFiles.$ext.style.height =
                     winSearchInFiles.$ext.offsetHeight + "px";
+                searchRow.appendChild(winSearchInFiles);
+                winSearchInFiles.show();
+
+                if (layout.clearFindArea(plugin, function(){
+                    toggleDialog(2, isReplace, noselect);
+                })) return;
 
                 position = -1;
     
-                var tab = tabs.focussedTab;
+                var tab    = tabs.focussedTab;
                 var editor = tab && tab.editor;
                 
                 if (editor && editor.type == "ace") {
@@ -365,8 +367,6 @@ define(function(require, exports, module) {
                     }
                 }
 
-                searchRow.appendChild(winSearchInFiles);
-                winSearchInFiles.show();
                 txtSFFind.focus();
                 txtSFFind.select();
 
