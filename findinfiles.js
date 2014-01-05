@@ -678,7 +678,7 @@ define(function(require, exports, module) {
                     }
                 }
             }, function(err, tab){
-                if (err) return;
+                if (err) return console.error(err);
             });
         }
 
