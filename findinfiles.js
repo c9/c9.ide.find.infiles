@@ -27,6 +27,8 @@ define(function(require, exports, module) {
 
         var markup    = require("text!./findinfiles.xml");
         var lib       = require("plugins/c9.ide.find.replace/libsearch");
+        
+        var SearchMode  = require("ace/mode/c9search").Mode;
 
         /***** Initialization *****/
 
@@ -127,6 +129,9 @@ define(function(require, exports, module) {
                     caption : "Search in files"
                 }), 410, plugin);
             });
+            
+            // add mouse interaction to restored session
+            SearchMode.prototype.attachToSession = initC9SearchSession;
         }
 
         var drawn = false;
@@ -497,56 +502,11 @@ define(function(require, exports, module) {
                 var acesession = session.session;
                 var doc        = acesession.getDocument();
                 
-                if (!acesession.searchInited) {
-                    acesession.searchInited = true;
-                    var dblclick = function() {
-                        launchFileFromSearch(doc.ace);
-                    };
-                    var onEnter = function(e) {
-                        if (e.keyCode == 13) { // ENTER
-                            if (e.altKey === false) {
-                                launchFileFromSearch(doc.ace, !e.shiftKey);
-                            }
-                            else {
-                                doc.ace.insert("\n");
-                            }
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
-                    };
-                    var onKeyup = function(e) {
-                        if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
-                            if (settings.getBool("user/findinfiles/@consolelaunch")) {
-                                launchFileFromSearch(doc.ace, false);
-                                return false;
-                            }
-                        }
-                    };
-                
-                    var updateEditorEventListeners = function(e){
-                        if (e.oldEditor) {
-                            e.oldEditor.container.removeEventListener("dblclick", dblclick);
-                            e.oldEditor.container.removeEventListener("keydown", onEnter);
-                            e.oldEditor.container.removeEventListener("keyup", onKeyup);
-                        }
-                        
-                        if (e.editor) {
-                            e.editor.container.addEventListener("keydown", onEnter);
-                            e.editor.container.addEventListener("keyup", onKeyup);
-                            e.editor.container.addEventListener("dblclick", dblclick);
-                            // Ref for appendLines
-                            doc.ace = e.editor;
-                        }
-                    };
-                        
-                    acesession.on("changeEditor", updateEditorEventListeners);
-                    updateEditorEventListeners({editor: tab.editor.ace});
-                }
-                
                 if (settings.getBool("user/findinfiles/@clear"))
                     doc.setValue("");
 
                 appendLines(doc, messageHeader(options.path, options));
+                
                 doc.lastHeaderRow = doc.getLength() - 3;
 
                 if (ddSFSelection.value == "active") {
@@ -585,11 +545,13 @@ define(function(require, exports, module) {
                 // Regexp for chrooted path
                 var reBase = settings.getBool("user/findinfiles/@fullpath")
                     ? false
-                    : new RegExp("^" + util.escapeRegExp(find.basePath), "g");
+                    : new RegExp("^" + util.escapeRegExp(find.basePath), "gm");
 
-                if (currentProcess)
+                if (currentProcess) {
                     currentProcess.kill();
-                
+                    currentProcess.stdout.removeAllListeners("data");
+                    currentProcess.stdout.removeAllListeners("end");
+                }
                 find.findFiles(options, function(err, stream, process) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
@@ -637,6 +599,57 @@ define(function(require, exports, module) {
 
                 // ide.dispatchEvent("track_action", {type: "searchinfiles"});
             });
+        }
+        
+        function initC9SearchSession(acesession) {
+            if (!acesession.searchInited) {
+                var doc = acesession.doc;
+                acesession.searchInited = true;
+                var dblclick = function() {
+                    launchFileFromSearch(doc.ace);
+                };
+                var onEnter = function(e) {
+                    if (e.keyCode == 13) { // ENTER
+                        if (e.altKey === false) {
+                            launchFileFromSearch(doc.ace, !e.shiftKey);
+                        }
+                        else {
+                            doc.ace.insert("\n");
+                        }
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                };
+                var onKeyup = function(e) {
+                    if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
+                        if (settings.getBool("user/findinfiles/@consolelaunch")) {
+                            launchFileFromSearch(doc.ace, false);
+                            return false;
+                        }
+                    }
+                };
+            
+                var updateEditorEventListeners = function(e){
+                    if (e.oldEditor) {
+                        e.oldEditor.container.removeEventListener("dblclick", dblclick);
+                        e.oldEditor.container.removeEventListener("keydown", onEnter);
+                        e.oldEditor.container.removeEventListener("keyup", onKeyup);
+                    }
+                    
+                    if (e.editor) {
+                        e.editor.container.addEventListener("keydown", onEnter);
+                        e.editor.container.addEventListener("keyup", onKeyup);
+                        e.editor.container.addEventListener("dblclick", dblclick);
+                        // Ref for appendLines
+                        doc.ace = e.editor;
+                    }
+                };
+                
+                acesession.on("changeEditor", updateEditorEventListeners);
+                var e = acesession.c9doc ? acesession.c9doc.tab.editor : doc;
+                if (e && e.ace && e.ace.session === acesession)
+                    updateEditorEventListeners({editor: e.ace});
+            }
         }
 
         function launchFileFromSearch(editor, focus) {
@@ -752,7 +765,7 @@ define(function(require, exports, module) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
                     path     : "/searchresults.txt", // This allows the tab to be saved
-                    value    : -1,
+                    value    : "",
                     active   : true,
                     document : {
                         title : "Search Results",
