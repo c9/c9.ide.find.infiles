@@ -547,6 +547,7 @@ define(function(require, exports, module) {
                     doc.setValue("");
 
                 appendLines(doc, messageHeader(options.path, options));
+                doc.lastHeaderRow = doc.getLength() - 3;
 
                 if (ddSFSelection.value == "active") {
                     var filename = lastActiveAce && lastActiveAce.isActive()
@@ -615,6 +616,19 @@ define(function(require, exports, module) {
                         tab.className.add("changed");
                         
                         currentProcess = null;
+                        
+                        var endRow = doc.getLength();
+                        for (var i = 1; i < 5; i++) {
+                            var line = doc.getLine(endRow - i);
+                            if (line && /Found \d+/.test(line)) {
+                                var headerRow = doc.lastHeaderRow;
+                                doc.insertInLine({
+                                    row: headerRow,
+                                    column: doc.getLine(headerRow).length
+                                }, " (" + line.trim() + ")");
+                                break;
+                            }
+                        }
                     });
                 });
 
