@@ -776,10 +776,7 @@ define(function(require, exports, module) {
                         },
                         "ace" : {
                             customSyntax : "c9search",
-                            options      : {
-                                useWrapMode         : true,
-                                wrapToView          : true
-                            }
+                            options      : {}
                         }
                     },
                     editorType : "ace",
