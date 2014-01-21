@@ -542,19 +542,13 @@ define(function(require, exports, module) {
                     options.pattern = files.join(",");
                 }
                 else if (ddSFSelection.value == "favorites") {
-                    var paths = [];
-                    if (options.pattern) paths.push(options.pattern);
-                    favs.getFavoritePaths().forEach(function(path){
-                        paths.push(path);
-                    });
+                    options.startPaths = favs.getFavoritePaths();
 
-                    if (paths.length < (options.pattern ? 2 : 1)) {
+                    if (!options.startPaths.length) {
                         appendLines(doc, "Error: There are no favorites. "
                             + "Add a favorite folder and try again.\n");
                         return;
                     }
-
-                    options.pattern = paths.join(",");
                 }
 
                 // Set loading indicator
