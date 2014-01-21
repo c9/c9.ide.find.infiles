@@ -418,7 +418,7 @@ define(function(require, exports, module) {
                     setTimeout(function(){
                         callback
                             ? callback()
-                            : apf.layout.forceResize();
+                            : apf.layout.forceResize(null, true);
                     }, 50);
                 });
 
