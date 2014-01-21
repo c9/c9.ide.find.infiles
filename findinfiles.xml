@@ -17,6 +17,7 @@
             <a:dropdown id="ddSFSelection" skin="dropdown-dark-glossy" height="27" minwidth="80" value="selection">
                 <a:item caption="Project" value="project" />
                 <a:item caption="Selection" value="selection" />
+                <a:item caption="Favorites" value="favorites" />
                 <a:item caption="Active File" value="active" />
                 <a:item caption="Open Files" value="open" />
             </a:dropdown>

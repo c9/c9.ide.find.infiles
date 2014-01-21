@@ -2,7 +2,8 @@ define(function(require, exports, module) {
     main.consumes = [
         "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
         "find", "anims", "menus", "tabManager", "commands", "tooltip", 
-        "tree", "apf", "console", "preferences", "dialog.question"
+        "tree", "apf", "console", "preferences", "dialog.question", 
+        "tree.favorites"
     ];
     main.provides = ["findinfiles"];
     return main;
@@ -16,6 +17,7 @@ define(function(require, exports, module) {
         var anims       = imports.anims;
         var menus       = imports.menus;
         var commands    = imports.commands;
+        var favs        = imports["tree.favorites"];
         var console     = imports.console;
         var layout      = imports.layout;
         var tooltip     = imports.tooltip;
@@ -446,16 +448,18 @@ define(function(require, exports, module) {
         function getTargetFolderPath() {
             // Determine the scope of the search
             var path;
-            if (ddSFSelection.value == "project") {
+            if (ddSFSelection.value == "selection") {
+                if (!tree.selected) {
+                    var paths = settings.getJson("user/tree_selection");
+                    if (!paths || !(path = paths[0]))
+                        path = "/";
+                }
+                if (!path) {
+                    path = getSelectedTreePath();
+                }
+            }
+            else {
                 path = "/";
-            }
-            else if (!tree.selected) {
-                var paths = settings.getJson("user/tree_selection");
-                if (!paths || !(path = paths[0]))
-                    path = "/";
-            }
-            if (!path) {
-                path = getSelectedTreePath();
             }
             return path;
         }
@@ -529,13 +533,28 @@ define(function(require, exports, module) {
                         if (tab.path) files.push(tab.path);
                     });
 
-                    if (!files.length) {
+                    if (files.length < (options.pattern ? 2 : 1)) {
                         appendLines(doc, "Error: There are no open files. "
                             + "Open some files and try again.\n");
                         return;
                     }
 
                     options.pattern = files.join(",");
+                }
+                else if (ddSFSelection.value == "favorites") {
+                    var paths = [];
+                    if (options.pattern) paths.push(options.pattern);
+                    favs.getFavoritePaths().forEach(function(path){
+                        paths.push(path);
+                    });
+
+                    if (paths.length < (options.pattern ? 2 : 1)) {
+                        appendLines(doc, "Error: There are no favorites. "
+                            + "Add a favorite folder and try again.\n");
+                        return;
+                    }
+
+                    options.pattern = paths.join(",");
                 }
 
                 // Set loading indicator
@@ -752,6 +771,8 @@ define(function(require, exports, module) {
                 path = "the active file";
             else if (ddSFSelection.value == "open")
                 path = "all open files";
+            else if (ddSFSelection.value == "favorites")
+                path = "all favorite folders";
 
             return "Searching for \x01" + options.query + replacement
                 + "\x01 in\x01" + path + "\x01" + optionsDesc + "\n\n";
