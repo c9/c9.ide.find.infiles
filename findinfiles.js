@@ -128,8 +128,8 @@ define(function(require, exports, module) {
                 menus.addItemToMenu(mnuCtxTree, new apf.item({
                     match   : "file|folder|project",
                     command : "searchinfiles",
-                    caption : "Search in files"
-                }), 410, plugin);
+                    caption : "Search In This Folder"
+                }), 1030, plugin);
             });
             
             // add mouse interaction to restored session
