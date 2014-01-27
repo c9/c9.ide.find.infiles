@@ -830,7 +830,7 @@ define(function(require, exports, module) {
         /***** Register and define API *****/
 
         /**
-         * Implements the search in files UI for Cloud9 IDE.
+         * Implements the search in files UI for Cloud9.
          * @singleton
          */
         /**
