@@ -780,7 +780,7 @@ define(function(require, exports, module) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
                     path     : "/searchresults.txt", // This allows the tab to be saved
-                    value    : "",
+                    value    : -1, // prevent metadata from loading old search results
                     active   : true,
                     document : {
                         title : "Search Results",
