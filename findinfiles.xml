@@ -1,14 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:label id="tooltipSearchInFiles" skin="tooltipLabel" visible="false" />
     <a:bar id="winSearchInFiles" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
-        <a:hbox class="find-and-replace" padding="5" edge="5" model="{settings.model}">
+        <a:hbox class="find-and-replace" padding="5" edge="5">
             <a:hbox class="grouped_checkbox_holder" align="start" height="27">
-                <a:checkbox id="chkSFRegEx" value="[state/findinfiles/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="27" />
-                <a:checkbox id="chkSFMatchCase" value="[state/findinfiles/@matchcase]" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="27" />
-                <a:checkbox id="chkSFWholeWords" value="[state/findinfiles/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="27" />
+                <a:checkbox id="chkSFRegEx" value="state/findinfiles/@regex" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="27" />
+                <a:checkbox id="chkSFMatchCase" value="state/findinfiles/@matchcase" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="27" />
+                <a:checkbox id="chkSFWholeWords" value="state/findinfiles/@wholeword" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="27" />
             </a:hbox>
             <a:hbox class="grouped_checkbox_holder" align="start" height="27">
-                <a:checkbox id="chkSFConsole" value="[state/findinfiles/@console]" class="chkConsole" label="Show in Console" skin="grouped_checkbox" width="28" />
+                <a:checkbox id="chkSFConsole" value="state/findinfiles/@console" class="chkConsole" label="Show in Console" skin="grouped_checkbox" width="28" />
             </a:hbox>
             <a:codebox id="txtSFFind" tabindex="1000" flex="3" skin="searchbox" initial-message="Find in Files" focusselect="true" />
             <a:button id="btnSFFind" focussable="false" skin="blackbutton" width="50" height="27">Find</a:button>
