@@ -26,7 +26,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.ide.ui/menus",
         {
             packagePath : "plugins/c9.core/settings",
-            settings    : "<settings><user><general animateui='true' /></user></settings>"
+            settings    : { user: { general: { animateui: true } } }
         },
         "plugins/c9.core/api.js",
         {
