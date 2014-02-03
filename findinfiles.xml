@@ -22,7 +22,7 @@
                 <a:item caption="Open Files" value="open" />
             </a:dropdown>
               
-            <a:codebox id="txtSFReplace" tabindex="1002" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true"/>
+            <a:codebox id="txtSFReplace" tabindex="1002" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true" label="$0-9 will insert the text of your capturing groups." />
             <a:button id="btnSFReplaceAll" focussable="false" skin="blackbutton" width="80" height="27">Replace</a:button>
             <a:button id="btnCollapse" skin="btn_console_open"  state="true" height="27" />
         </a:hbox>

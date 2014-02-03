@@ -258,21 +258,23 @@ define(function(require, exports, module) {
                     }
                 }, plugin);
             });
-
-            tooltip.add(txtSFPatterns.$ext, {
-                message : txtSFPatterns.label,
-                width   : "auto",
-                timeout : 0,
-                tooltip : tt,
-                animate : false,
-                getPosition : function(){
-                    var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
-                    var left = pos[0] + txtSFPatterns.getLeft();
-                    var top = pos[1];
-                    return [left, top - 16];
-                }
-            }, plugin);
-
+            
+            [txtSFReplace, txtSFPatterns].forEach(function(node){
+                tooltip.add(node.$ext, {
+                    message : node.label,
+                    width   : "auto",
+                    timeout : 0,
+                    tooltip : tt,
+                    animate : false,
+                    getPosition : function(){
+                        var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
+                        var left = pos[0] + node.getLeft();
+                        var top = pos[1];
+                        return [left, top - 16];
+                    }
+                }, plugin);
+            });
+            
             // Offline
             c9.on("stateChange", function(e){
                 // Online
