@@ -803,7 +803,7 @@ define(function(require, exports, module) {
                             currentProcess.kill();
                     });
                     
-                    tab.document.value = " ";
+                    tab.document.value = " "; // prevent metadata from loading old search results
                     
                     callback(err, tab);
                     done && done();
