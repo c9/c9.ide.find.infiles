@@ -781,8 +781,7 @@ define(function(require, exports, module) {
             if (!tab || !tab.loaded) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
-                    path     : "/searchresults.txt", // This allows the tab to be saved
-                    value    : " ", // prevent metadata from loading old search results
+                    path     : "/.c9/searchresults", // This allows the tab to be saved
                     active   : true,
                     document : {
                         title : "Search Results",
@@ -803,6 +802,8 @@ define(function(require, exports, module) {
                         if (currentProcess)
                             currentProcess.kill();
                     });
+                    
+                    tab.document.value = " ";
                     
                     callback(err, tab);
                     done && done();
