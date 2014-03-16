@@ -525,23 +525,21 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.pattern = filename;
-                    // options.path    = dirname(filename);
+                    options.startPaths = [filename];
                 }
                 else if (ddSFSelection.value == "open") {
                     var files = [];
-                    if (options.pattern) files.push(options.pattern);
                     tabs.getTabs().forEach(function(tab){
                         if (tab.path) files.push(tab.path);
                     });
 
-                    if (files.length < (options.pattern ? 2 : 1)) {
+                    if (files.length < 1) {
                         appendLines(doc, "Error: There are no open files. "
                             + "Open some files and try again.\n");
                         return;
                     }
 
-                    options.pattern = files.join(",");
+                    options.startPaths = files;
                 }
                 else if (ddSFSelection.value == "favorites") {
                     options.startPaths = favs.getFavoritePaths();
