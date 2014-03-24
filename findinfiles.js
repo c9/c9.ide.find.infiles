@@ -395,6 +395,8 @@ define(function(require, exports, module) {
                     timingFunction : "cubic-bezier(.10, .10, .25, .90)"
                 }, function() {
                     winSearchInFiles.$ext.style.height = "";
+                    
+                    ui.layout.forceResize(null, true);
                 });
 
                 btnCollapse.setValue(1);
