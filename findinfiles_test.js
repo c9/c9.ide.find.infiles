@@ -58,7 +58,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         {
             packagePath : "plugins/c9.ide.find/find.nak",
-            ignore       : ""
+            ignore       : "",
+            installPath  : "~/.c9"
         },
         "plugins/c9.ide.keys/commands",
         "plugins/c9.fs/proc",
