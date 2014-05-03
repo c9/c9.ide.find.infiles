@@ -247,6 +247,7 @@ define(function(require, exports, module) {
             chkSFRegEx.on("prop.value", function(e){
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
+            libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
 
             var cbs = winSearchInFiles.selectNodes("//a:checkbox");
             cbs.forEach(function(cb){
