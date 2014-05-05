@@ -768,7 +768,7 @@ define(function(require, exports, module) {
 
             var replacement = "";
             if (options.replaceAll)
-                replacement = "\x01, replaced as \x01" + options.replacement ;
+                replacement = "\x01, replaced as \x01" + trim(options.replacement);
 
             if (ddSFSelection.value == "project")
                 path = "the entire project";
@@ -779,8 +779,12 @@ define(function(require, exports, module) {
             else if (ddSFSelection.value == "favorites")
                 path = "all favorite folders";
 
-            return "Searching for \x01" + options.query + replacement
+            return "Searching for \x01" + trim(options.query) + replacement
                 + "\x01 in\x01" + path + "\x01" + optionsDesc + "\n\n";
+        }
+
+        function trim(str) {
+            return /.*/.exec(str)[0];
         }
 
         var searchPanel = {};
