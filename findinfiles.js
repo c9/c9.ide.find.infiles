@@ -248,6 +248,8 @@ define(function(require, exports, module) {
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
             libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
+            
+            libsearch.setReplaceFieldMode(txtSFReplace, "jsOnly");
 
             var cbs = winSearchInFiles.selectNodes("//a:checkbox");
             cbs.forEach(function(cb){
