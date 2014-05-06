@@ -9,33 +9,33 @@ define(function(require, exports, module) {
     return main;
 
     function main(options, imports, register) {
-        var c9          = imports.c9;
-        var util        = imports.util;
-        var Plugin      = imports.Plugin;
-        var settings    = imports.settings;
-        var ui          = imports.ui;
-        var anims       = imports.anims;
-        var menus       = imports.menus;
-        var commands    = imports.commands;
-        var favs        = imports["tree.favorites"];
-        var console     = imports.console;
-        var layout      = imports.layout;
-        var tooltip     = imports.tooltip;
-        var tabs        = imports.tabManager;
-        var tree        = imports.tree;
-        var prefs       = imports.preferences;
-        var find        = imports.find;
-        var question    = imports["dialog.question"].show;
+        var c9 = imports.c9;
+        var util = imports.util;
+        var Plugin = imports.Plugin;
+        var settings = imports.settings;
+        var ui = imports.ui;
+        var anims = imports.anims;
+        var menus = imports.menus;
+        var commands = imports.commands;
+        var favs = imports["tree.favorites"];
+        var console = imports.console;
+        var layout = imports.layout;
+        var tooltip = imports.tooltip;
+        var tabs = imports.tabManager;
+        var tree = imports.tree;
+        var prefs = imports.preferences;
+        var find = imports.find;
+        var question = imports["dialog.question"].show;
 
-        var markup    = require("text!./findinfiles.xml");
-        var lib       = require("plugins/c9.ide.find.replace/libsearch");
+        var markup = require("text!./findinfiles.xml");
+        var lib = require("plugins/c9.ide.find.replace/libsearch");
         
-        var SearchMode  = require("ace/mode/c9search").Mode;
+        var SearchMode = require("ace/mode/c9search").Mode;
 
         /***** Initialization *****/
 
         var plugin = new Plugin("Ajax.org", main.consumes);
-        var emit   = plugin.getEmitter();
+        var emit = plugin.getEmitter();
 
         var libsearch = lib(settings, execFind, toggleDialog, function(){});
 
@@ -56,20 +56,20 @@ define(function(require, exports, module) {
             loaded = true;
 
             commands.addCommand({
-                name    : "searchinfiles",
-                hint    : "search for a string through all files in the current workspace",
-                bindKey : {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
-                exec    : function () {
+                name: "searchinfiles",
+                hint: "search for a string through all files in the current workspace",
+                bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
+                exec: function () {
                     toggleDialog(1);
                 }
             }, plugin);
 
             menus.addItemByPath("Find/~", new apf.divider(), 10000, plugin),
             menus.addItemByPath("Find/Find in Files...", new apf.item({
-                command : "searchinfiles"
+                command: "searchinfiles"
             }), 20000, plugin);
 
-            settings.on("read", function(e){
+            settings.on("read", function(e) {
                 settings.setDefaults("state/findinfiles", [
                     ["regex", "false"],
                     ["matchcase", "false"],
@@ -87,32 +87,32 @@ define(function(require, exports, module) {
             prefs.add({
                "General" : {
                    "Find in Files" : {
-                       position : 30,
+                       position: 30,
                         "Show Full Path in Results" : {
-                            type     : "checkbox",
-                            position : 100,
-                            path     : "user/findinfiles/@fullpath"
+                            type: "checkbox",
+                            position: 100,
+                            path: "user/findinfiles/@fullpath"
                         },
                         "Clear Results Before Each Search" : {
-                            type     : "checkbox",
-                            position : 100,
-                            path     : "user/findinfiles/@clear"
+                            type: "checkbox",
+                            position: 100,
+                            path: "user/findinfiles/@clear"
                         },
                         "Scroll Down as Search Results Come In" : {
-                            type     : "checkbox",
-                            position : 100,
-                            path     : "user/findinfiles/@scrolldown"
+                            type: "checkbox",
+                            position: 100,
+                            path: "user/findinfiles/@scrolldown"
                         },
                         "Open Files when Navigating Results with ↓ ↑" : {
-                            type     : "checkbox",
-                            position : 100,
-                            path     : "user/findinfiles/@consolelaunch"
+                            type: "checkbox",
+                            position: 100,
+                            path: "user/findinfiles/@consolelaunch"
                         }
                    }
                }
             }, plugin);
 
-            tabs.on("focus", function(e){
+            tabs.on("focus", function(e) {
                 if (e.tab.editor.type == "ace" 
                   && searchPanel[true] != e.tab 
                   && searchPanel[false] != e.tab) {
@@ -126,9 +126,9 @@ define(function(require, exports, module) {
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree) {
                 menus.addItemToMenu(mnuCtxTree, new apf.item({
-                    match   : "file|folder|project",
-                    command : "searchinfiles",
-                    caption : "Search In This Folder"
+                    match: "file|folder|project",
+                    command: "searchinfiles",
+                    caption: "Search In This Folder"
                 }), 1030, plugin);
             });
             
@@ -145,18 +145,18 @@ define(function(require, exports, module) {
             searchRow = layout.findParent(plugin);
             ui.insertMarkup(null, markup, plugin);
 
-            txtSFFind        = plugin.getElement("txtSFFind");
-            txtSFPatterns    = plugin.getElement("txtSFPatterns");
-            chkSFMatchCase   = plugin.getElement("chkSFMatchCase");
-            chkSFRegEx       = plugin.getElement("chkSFRegEx");
-            txtSFReplace     = plugin.getElement("txtSFReplace");
-            chkSFWholeWords  = plugin.getElement("chkSFWholeWords");
-            chkSFConsole     = plugin.getElement("chkSFConsole");
-            ddSFSelection    = plugin.getElement("ddSFSelection");
-            btnSFFind        = plugin.getElement("btnSFFind");
+            txtSFFind = plugin.getElement("txtSFFind");
+            txtSFPatterns = plugin.getElement("txtSFPatterns");
+            chkSFMatchCase = plugin.getElement("chkSFMatchCase");
+            chkSFRegEx = plugin.getElement("chkSFRegEx");
+            txtSFReplace = plugin.getElement("txtSFReplace");
+            chkSFWholeWords = plugin.getElement("chkSFWholeWords");
+            chkSFConsole = plugin.getElement("chkSFConsole");
+            ddSFSelection = plugin.getElement("ddSFSelection");
+            btnSFFind = plugin.getElement("btnSFFind");
             winSearchInFiles = plugin.getElement("winSearchInFiles");
-            btnSFReplaceAll  = plugin.getElement("btnSFReplaceAll");
-            btnCollapse      = plugin.getElement("btnCollapse");
+            btnSFReplaceAll = plugin.getElement("btnSFReplaceAll");
+            btnCollapse = plugin.getElement("btnCollapse");
             tooltipSearchInFiles = plugin.getElement("tooltipSearchInFiles");
 
             btnSFFind.on("click", function(){ execFind(); });
@@ -170,14 +170,14 @@ define(function(require, exports, module) {
 
                 // I'd rather use css anims, but they didn't seem to work
                 apf.tween.single(txtSFReplace.$ext.parentNode, {
-                    type     : "boxFlex",
-                    from     : txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 1,
-                    to       : 3,
-                    anim     : apf.tween.easeOutCubic,
-                    control  : control,
-                    steps    : 15,
-                    interval : 1,
-                    onfinish : function(){
+                    type: "boxFlex",
+                    from: txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 1,
+                    to: 3,
+                    anim: apf.tween.easeOutCubic,
+                    control: control,
+                    steps: 15,
+                    interval: 1,
+                    onfinish: function(){
                         ui.layout.forceResize(null, true);
                     }
                 });
@@ -191,26 +191,26 @@ define(function(require, exports, module) {
 
                 // I'd rather use css anims, but they didn't seem to work
                 apf.tween.single(txtSFReplace.$ext.parentNode, {
-                    type     : "boxFlex",
-                    from     : txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 3,
-                    to       : 1,
-                    anim     : apf.tween.easeOutCubic,
-                    control  : control,
-                    steps    : 15,
-                    interval : 1,
-                    onfinish : function(){
+                    type: "boxFlex",
+                    from: txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 3,
+                    to: 1,
+                    anim: apf.tween.easeOutCubic,
+                    control: control,
+                    steps: 15,
+                    interval: 1,
+                    onfinish: function(){
                         ui.layout.forceResize(null, true);
                     }
                 });
             });
 
             commands.addCommand({
-                name        : "hidesearchinfiles",
-                bindKey     : {mac: "ESC", win: "ESC"},
-                isAvailable : function(editor){
+                name: "hidesearchinfiles",
+                bindKey: {mac: "ESC", win: "ESC"},
+                isAvailable: function(editor) {
                     return winSearchInFiles.visible;
                 },
-                exec : function(env, args, request) {
+                exec: function(env, args, request) {
                     toggleDialog(-1);
                 }
             }, plugin);
@@ -244,7 +244,7 @@ define(function(require, exports, module) {
 
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
-            chkSFRegEx.on("prop.value", function(e){
+            chkSFRegEx.on("prop.value", function(e) {
                 libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
             });
             libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
@@ -252,14 +252,14 @@ define(function(require, exports, module) {
             libsearch.setReplaceFieldMode(txtSFReplace, "jsOnly");
 
             var cbs = winSearchInFiles.selectNodes("//a:checkbox");
-            cbs.forEach(function(cb){
+            cbs.forEach(function(cb) {
                 tooltip.add(cb.$ext, {
-                    message : cb.label,
-                    width   : "auto",
-                    timeout : 0,
-                    tooltip : tt,
-                    animate : false,
-                    getPosition : function(){
+                    message: cb.label,
+                    width: "auto",
+                    timeout: 0,
+                    tooltip: tt,
+                    animate: false,
+                    getPosition: function(){
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = pos[0] + cb.getLeft();
                         var top = pos[1];
@@ -268,14 +268,14 @@ define(function(require, exports, module) {
                 }, plugin);
             });
             
-            [txtSFReplace, txtSFPatterns].forEach(function(node){
+            [txtSFReplace, txtSFPatterns].forEach(function(node) {
                 tooltip.add(node.$ext, {
-                    message : node.label,
-                    width   : "auto",
-                    timeout : 0,
-                    tooltip : tt,
-                    animate : false,
-                    getPosition : function(){
+                    message: node.label,
+                    width: "auto",
+                    timeout: 0,
+                    tooltip: tt,
+                    animate: false,
+                    getPosition: function(){
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = pos[0] + node.getLeft();
                         var top = pos[1];
@@ -285,7 +285,7 @@ define(function(require, exports, module) {
             });
             
             // Offline
-            c9.on("stateChange", function(e){
+            c9.on("stateChange", function(e) {
                 // Online
                 if (e.state & c9.STORAGE) {
                     winSearchInFiles.enable();
@@ -308,7 +308,7 @@ define(function(require, exports, module) {
             });
         }
 
-        function setSearchSelection(e){
+        function setSearchSelection(e) {
             var path, node, name, parts;
 
             if (tree.selected) {
@@ -373,11 +373,11 @@ define(function(require, exports, module) {
 
                 position = -1;
     
-                var tab    = tabs.focussedTab;
+                var tab = tabs.focussedTab;
                 var editor = tab && tab.editor;
                 
                 if (editor && editor.type == "ace") {
-                    var ace   = editor.ace;
+                    var ace = editor.ace;
 
                     if (!ace.selection.isEmpty()) {
                         txtSFFind.setValue(ace.getCopyText());
@@ -393,9 +393,9 @@ define(function(require, exports, module) {
 
                 // Animate
                 anims.animateSplitBoxNode(winSearchInFiles, {
-                    height         : winSearchInFiles.$ext.scrollHeight + "px",
-                    duration       : 0.2,
-                    timingFunction : "cubic-bezier(.10, .10, .25, .90)"
+                    height: winSearchInFiles.$ext.scrollHeight + "px",
+                    duration: 0.2,
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
                 }, function() {
                     winSearchInFiles.$ext.style.height = "";
                     
@@ -415,9 +415,9 @@ define(function(require, exports, module) {
                     winSearchInFiles.$ext.offsetHeight + "px";
 
                 anims.animateSplitBoxNode(winSearchInFiles, {
-                    height         : 0,
-                    duration       : 0.2,
-                    timingFunction : "ease-in-out"
+                    height: 0,
+                    duration: 0.2,
+                    timingFunction: "ease-in-out"
                 }, function(){
                     winSearchInFiles.visible = true;
                     winSearchInFiles.hide();
@@ -447,14 +447,14 @@ define(function(require, exports, module) {
 
         function getOptions() {
             return {
-                query         : txtSFFind.getValue().replace(/\\n/g, "\n"),
-                pattern       : txtSFPatterns.getValue(),
-                casesensitive : chkSFMatchCase.checked,
-                regexp        : chkSFRegEx.checked,
-                replaceAll    : false,
-                replacement   : txtSFReplace.getValue(),
-                wholeword     : chkSFWholeWords.checked,
-                path          : getTargetFolderPath()
+                query: txtSFFind.getValue().replace(/\\n/g, "\n"),
+                pattern: txtSFPatterns.getValue(),
+                casesensitive: chkSFMatchCase.checked,
+                regexp: chkSFRegEx.checked,
+                replaceAll: false,
+                replacement: txtSFReplace.getValue(),
+                wholeword: chkSFWholeWords.checked,
+                path: getTargetFolderPath()
             };
         }
         
@@ -477,7 +477,7 @@ define(function(require, exports, module) {
             return path;
         }
 
-        function execReplace(options){
+        function execReplace(options) {
             if (options) {
                 options.replaceAll = true;
                 execFind(options);
@@ -509,15 +509,15 @@ define(function(require, exports, module) {
             if (chkSFConsole.checked)
                 console.show();
             
-            makeSearchResultsPanel(function(err, tab){
+            makeSearchResultsPanel(function(err, tab) {
                 if (err) {
                     console.error("Error creating search panel");
                     return;
                 }
                 
-                var session    = tab.document.getSession();
+                var session = tab.document.getSession();
                 var acesession = session.session;
-                var doc        = acesession.getDocument();
+                var doc = acesession.getDocument();
                 
                 if (settings.getBool("user/findinfiles/@clear"))
                     doc.setValue("");
@@ -540,7 +540,7 @@ define(function(require, exports, module) {
                 }
                 else if (ddSFSelection.value == "open") {
                     var files = [];
-                    tabs.getTabs().forEach(function(tab){
+                    tabs.getTabs().forEach(function(tab) {
                         if (tab.path) files.push(tab.path);
                     });
 
@@ -587,7 +587,7 @@ define(function(require, exports, module) {
                     currentProcess = process;
 
                     var firstRun = true;
-                    stream.on("data", function(chunk){
+                    stream.on("data", function(chunk) {
                         if (firstRun && !settings.getBool("user/findinfiles/@scrolldown")) {
                             var currLength = doc.getLength() - 3; // the distance to the last message
                             doc.ace.scrollToLine(currLength, false, true);
@@ -596,7 +596,7 @@ define(function(require, exports, module) {
                         appendLines(doc,
                             reBase ? chunk.replace(reBase, "") : chunk);
                     });
-                    stream.on("end", function(data){
+                    stream.on("end", function(data) {
                         appendLines(doc, "\n", tab);
                         tab.className.remove("loading");
                         tab.className.add("changed");
@@ -653,7 +653,7 @@ define(function(require, exports, module) {
                     }
                 };
             
-                var updateEditorEventListeners = function(e){
+                var updateEditorEventListeners = function(e) {
                     if (e.oldEditor) {
                         e.oldEditor.container.removeEventListener("dblclick", dblclick);
                         e.oldEditor.container.removeEventListener("keydown", onEnter);
@@ -708,27 +708,27 @@ define(function(require, exports, module) {
             if (!path)
                 return;
 
-            var row    = parseInt(clickedLine[0], 10) - 1;
-            var range  = editor.getSelectionRange();
+            var row = parseInt(clickedLine[0], 10) - 1;
+            var range = editor.getSelectionRange();
             var offset = clickedLine[0].length + 2;
 
             tabs.open({
-                path      : path,
-                active    : true,
-                focus     : focus,
-                document  : {
+                path: path,
+                active: true,
+                focus: focus,
+                document: {
                     ace: {
-                        jump : {
-                            row       : row,
-                            column    : range.start.column - offset,
-                            select    : {
-                                row    : row,
-                                column : range.end.column - offset
+                        jump: {
+                            row: row,
+                            column: range.start.column - offset,
+                            select: {
+                                row: row,
+                                column: range.end.column - offset
                             }
                         }
                     }
                 }
-            }, function(err, tab){
+            }, function(err, tab) {
                 if (err) return console.error(err);
             });
         }
@@ -794,23 +794,23 @@ define(function(require, exports, module) {
             if (!tab || !tab.loaded) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
-                    path     : "/.c9/searchresults", // This allows the tab to be saved
-                    active   : true,
-                    document : {
-                        title : "Search Results",
-                        meta  : {
-                            searchResults : true,
-                            ignoreSave    : true,
-                            newfile       : true
+                    path: "/.c9/searchresults", // This allows the tab to be saved
+                    active: true,
+                    document: {
+                        title: "Search Results",
+                        meta: {
+                            searchResults: true,
+                            ignoreSave: true,
+                            newfile: true
                         },
                         "ace" : {
-                            customSyntax : "c9search",
-                            options      : {}
+                            customSyntax: "c9search",
+                            options: {}
                         }
                     },
-                    editorType : "ace",
+                    editorType: "ace",
                     name: "searchResults"
-                }, function(err, tab, done){
+                }, function(err, tab, done) {
                     tab.on("unload", function(){
                         if (currentProcess)
                             currentProcess.kill();
@@ -884,7 +884,7 @@ define(function(require, exports, module) {
              * @param {Number} force  Set to -1 to force hide the panel, 
              *   or set to 1 to force show the panel.
              */
-            toggle : toggleDialog
+            toggle: toggleDialog
         });
 
         register(null, {
