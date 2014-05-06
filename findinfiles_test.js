@@ -8,13 +8,13 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
     
     expect.setupArchitectTest([
         {
-            packagePath : "plugins/c9.core/c9",
-            workspaceId : "ubuntu/ip-10-35-77-180",
-            startdate   : new Date(),
-            debug       : true,
-            hosted      : true,
-            local       : false,
-            davPrefix   : "/"
+            packagePath: "plugins/c9.core/c9",
+            workspaceId: "ubuntu/ip-10-35-77-180",
+            startdate: new Date(),
+            debug: true,
+            hosted: true,
+            local: false,
+            davPrefix: "/"
         },
         
         "plugins/c9.core/ext",
@@ -25,13 +25,13 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.ide.ui/tooltip",
         "plugins/c9.ide.ui/menus",
         {
-            packagePath : "plugins/c9.core/settings",
-            settings    : { user: { general: { animateui: true } } }
+            packagePath: "plugins/c9.core/settings",
+            settings: { user: { general: { animateui: true } } }
         },
         "plugins/c9.core/api.js",
         {
-            packagePath  : "plugins/c9.ide.ui/ui",
-            staticPrefix : "plugins/c9.ide.ui"
+            packagePath: "plugins/c9.ide.ui/ui",
+            staticPrefix: "plugins/c9.ide.ui"
         },
         "plugins/c9.ide.editors/document",
         "plugins/c9.ide.editors/undomanager",
@@ -41,25 +41,25 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.ide.editors/editor",
         {
-            packagePath : "plugins/c9.ide.editors/tabmanager",
-            testing : 2
+            packagePath: "plugins/c9.ide.editors/tabmanager",
+            testing: 2
         },
         "plugins/c9.ide.ui/focus",
         "plugins/c9.ide.editors/pane",
         "plugins/c9.ide.editors/tab",
         "plugins/c9.ide.ace/ace",
         {
-            packagePath  : "plugins/c9.ide.find.infiles/findinfiles",
-            staticPrefix : "plugins/c9.ide.find.infiles"
+            packagePath: "plugins/c9.ide.find.infiles/findinfiles",
+            staticPrefix: "plugins/c9.ide.find.infiles"
         },
         {
-            packagePath  : "plugins/c9.ide.find/find",
-            basePath     : baseProc
+            packagePath: "plugins/c9.ide.find/find",
+            basePath: baseProc
         },
         {
-            packagePath : "plugins/c9.ide.find/find.nak",
-            ignore       : "",
-            installPath  : "~/.c9"
+            packagePath: "plugins/c9.ide.find/find.nak",
+            ignore: "",
+            installPath: "~/.c9"
         },
         "plugins/c9.ide.keys/commands",
         "plugins/c9.fs/proc",
@@ -72,31 +72,31 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         
         // Mock plugins
         {
-            consumes : ["apf", "ui", "Plugin"],
-            provides : [
+            consumes: ["apf", "ui", "Plugin"],
+            provides: [
                 "commands", "menus", "layout", "watcher", "tree", "clipboard",
                 "save", "preferences", "anims", "gotoline", "findreplace",
                 "dialog.alert", "auth.bootstrap", "dialog.question", "info",
                 "dialog.error", "tree.favorites"
             ],
-            setup    : expect.html.mocked
+            setup: expect.html.mocked
         },
         {
-            consumes : ["findinfiles", "tabManager", "console"],
-            provides : [],
-            setup    : main
+            consumes: ["findinfiles", "tabManager", "console"],
+            provides: [],
+            setup: main
         }
     ], architect);
     
     function main(options, imports, register) {
         var findinfiles = imports.findinfiles;
-        var tabs        = imports.tabManager;
+        var tabs = imports.tabManager;
         
-        function getTabHtml(tab){
+        function getTabHtml(tab) {
             return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
         }
         
-        expect.html.setConstructor(function(tab){
+        expect.html.setConstructor(function(tab) {
             if (typeof tab == "object")
                 return tab.$ext;
         });
@@ -104,7 +104,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         describe('ace', function() {
             this.timeout(10000);
             
-            before(function(done){
+            before(function(done) {
                 apf.config.setProperty("allow-select", false);
                 apf.config.setProperty("allow-blur", false);
                 
@@ -126,7 +126,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 });
             });
             
-            if (!onload.remain){
+            if (!onload.remain) {
                 describe("unload", function(){
                     
                     it('should open a pane with just an editor', function(done) {
@@ -135,7 +135,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                     });
                 });
                 
-                after(function(done){
+                after(function(done) {
                    imports.console.unload();
                    
                    document.body.style.marginBottom = "";
