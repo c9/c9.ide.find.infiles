@@ -563,8 +563,8 @@ define(function(require, exports, module) {
                 }
 
                 // Set loading indicator
-                tab.className.remove("changed");
-                tab.className.add("loading");
+                tab.classList.remove("changed");
+                tab.classList.add("loading");
 
                 // Regexp for chrooted path
                 var reBase = settings.getBool("user/findinfiles/@fullpath")
@@ -579,8 +579,8 @@ define(function(require, exports, module) {
                 find.findFiles(options, function(err, stream, process) {
                     if (err) {
                         appendLines(doc, "Error executing search: " + err.message);
-                        tab.className.remove("loading");
-                        tab.className.add("error");
+                        tab.classList.remove("loading");
+                        tab.classList.add("error");
                         return;
                     }
                     
@@ -598,8 +598,8 @@ define(function(require, exports, module) {
                     });
                     stream.on("end", function(data) {
                         appendLines(doc, "\n", tab);
-                        tab.className.remove("loading");
-                        tab.className.add("changed");
+                        tab.classList.remove("loading");
+                        tab.classList.add("changed");
                         
                         currentProcess = null;
                         
