@@ -819,7 +819,8 @@ define(function(require, exports, module) {
                     tab.document.value = " "; // prevent metadata from loading old search results
                     
                     callback(err, tab);
-                    done && done();
+                    if (typeof done == "function")
+                        done();
                 });
             }
             else {
