@@ -64,8 +64,8 @@ define(function(require, exports, module) {
                 }
             }, plugin);
 
-            menus.addItemByPath("Find/~", new apf.divider(), 10000, plugin),
-            menus.addItemByPath("Find/Find in Files...", new apf.item({
+            menus.addItemByPath("Find/~", new ui.divider(), 10000, plugin),
+            menus.addItemByPath("Find/Find in Files...", new ui.item({
                 command: "searchinfiles"
             }), 20000, plugin);
 
@@ -125,7 +125,7 @@ define(function(require, exports, module) {
             
             // Context Menu
             tree.getElement("mnuCtxTree", function(mnuCtxTree) {
-                menus.addItemToMenu(mnuCtxTree, new apf.item({
+                menus.addItemToMenu(mnuCtxTree, new ui.item({
                     match: "file|folder|project",
                     command: "searchinfiles",
                     caption: "Search In This Folder"
@@ -162,6 +162,18 @@ define(function(require, exports, module) {
             btnSFFind.on("click", function(){ execFind(); });
             btnSFReplaceAll.on("click", function(){ execReplace(); });
             btnCollapse.on("click", function(){ toggleDialog(-1); });
+
+            var first = 0;
+            function resize(){
+                if (first++ < 2) { return; } // Skip first 2 calls
+                
+                winSearchInFiles.setHeight(winSearchInFiles.$ext.scrollHeight);
+                winSearchInFiles.$ext.style.height = "";
+                ui.layout.forceResize(null, true);
+            }
+            
+            txtSFFind.ace.renderer.on("autosize", resize);
+            txtSFReplace.ace.renderer.on("autosize", resize);
 
             var control;
             txtSFReplace.on("focus", function(){
@@ -245,7 +257,7 @@ define(function(require, exports, module) {
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
             chkSFRegEx.on("prop.value", function(e) {
-                libsearch.setRegexpMode(txtSFFind, apf.isTrue(e.value));
+                libsearch.setRegexpMode(txtSFFind, ui.isTrue(e.value));
             });
             libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
             
