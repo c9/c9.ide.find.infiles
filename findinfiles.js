@@ -166,8 +166,9 @@ define(function(require, exports, module) {
             var first = 0;
             function resize(){
                 if (first++ < 2) { return; } // Skip first 2 calls
-                
-                winSearchInFiles.setHeight(winSearchInFiles.$ext.scrollHeight);
+                var h = winSearchInFiles.$ext.scrollHeight;
+                if (Math.abs(winSearchInFiles.height - h) < 1) { return; }
+                winSearchInFiles.setHeight(h);
                 winSearchInFiles.$ext.style.height = "";
                 ui.layout.forceResize(null, true);
             }
