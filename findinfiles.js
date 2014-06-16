@@ -577,6 +577,7 @@ define(function(require, exports, module) {
 
                 // Set loading indicator
                 tab.classList.remove("changed");
+                tab.classList.remove("error");
                 tab.classList.add("loading");
 
                 // Regexp for chrooted path
