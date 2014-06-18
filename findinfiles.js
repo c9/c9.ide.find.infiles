@@ -809,7 +809,7 @@ define(function(require, exports, module) {
                 var root = chkSFConsole.checked ? console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
                     path: "/.c9/searchresults", // This allows the tab to be saved
-                    active: true,
+                    focus: true,
                     document: {
                         title: "Search Results",
                         meta: {
