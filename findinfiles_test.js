@@ -14,7 +14,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             debug: true,
             hosted: true,
             local: false,
-            davPrefix: "/"
+            davPrefix: "/",
+            home: "/home/ubuntu"
         },
         
         "plugins/c9.core/ext",
