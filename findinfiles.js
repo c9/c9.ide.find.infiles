@@ -29,6 +29,7 @@ define(function(require, exports, module) {
 
         var markup = require("text!./findinfiles.xml");
         var lib = require("plugins/c9.ide.find.replace/libsearch");
+        var join = require("path").join;
         
         var SearchMode = require("ace/mode/c9search").Mode;
 
@@ -114,8 +115,7 @@ define(function(require, exports, module) {
 
             tabs.on("focus", function(e) {
                 if (e.tab.editor.type == "ace" 
-                  && searchPanel[true] != e.tab 
-                  && searchPanel[false] != e.tab) {
+                  && !e.tab.document.meta.searchResults) {
                     lastActiveAce = e.tab;
                 }
             }, plugin);
@@ -514,6 +514,10 @@ define(function(require, exports, module) {
                 );
             }
         }
+        
+        function makeAbsolutePath(path){
+            return join(find.basePath, path);
+        }
 
         function execFind(options) {
             options = options || getOptions();
@@ -549,7 +553,7 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.startPaths = [filename];
+                    options.startPaths = [makeAbsolutePath(filename)];
                 }
                 else if (ddSFSelection.value == "open") {
                     var files = [];
@@ -563,7 +567,7 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.startPaths = files;
+                    options.startPaths = files.map(makeAbsolutePath);
                 }
                 else if (ddSFSelection.value == "favorites") {
                     options.startPaths = favs.getFavoritePaths();
