@@ -690,6 +690,9 @@ define(function(require, exports, module) {
             }
         }
 
+        var basePath = find.basePath.replace(/[\\\/]+/g, "/");
+        var reBasePath = new RegExp("^" + util.escapeRegExp(basePath));
+        var reHome = new RegExp("^" + util.escapeRegExp(c9.home));
         function launchFileFromSearch(editor, focus) {
             if (focus === undefined)
                 focus = true;
@@ -712,11 +715,11 @@ define(function(require, exports, module) {
             if (path.charAt(path.length - 1) == ":")
                 path = path.substring(0, path.length-1);
 
-            var basePath = find.basePath.replace(/[\\\/]+/g, "/");
             path = path.replace(/[\\\/]+/g, "/")
-                .replace(new RegExp("^" + util.escapeRegExp(basePath)), "");
+                .replace(reBasePath, "")
+                .replace(reHome, "~");
 
-            if (path.charAt(0) != "/")
+            if (!/[\/~]/.test(path.charAt(0)))
                 path = "/" + path;
 
             if (!path)
