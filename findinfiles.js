@@ -251,9 +251,6 @@ define(function(require, exports, module) {
             });
 
             kb = libsearch.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
-            kb.bindKeys({
-                "Return|Shift-Return": function(){ execFind(); }
-            });
 
             var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
     
