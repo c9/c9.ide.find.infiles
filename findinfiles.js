@@ -700,18 +700,15 @@ define(function(require, exports, module) {
             var session = editor.getSession();
             var currRow = editor.getCursorPosition().row;
 
-            var clickedLine = session.getLine(currRow).split(": "); // number:text
-            if (clickedLine.length < 2) // some other part of the editor
-                return;
-
             // "string" type is the parent filename
-            while (currRow --> 0) {
-                var token = session.getTokenAt(currRow, 0);
+            var pathRow = currRow + 1;
+            while (pathRow --> 0) {
+                var token = session.getTokenAt(pathRow, 0);
                 if (token && token.type.indexOf("string") != -1)
                     break;
             }
 
-            var path = editor.getSession().getLine(currRow);
+            var path = editor.getSession().getLine(pathRow);
 
             if (path.charAt(path.length - 1) == ":")
                 path = path.substring(0, path.length-1);
@@ -725,10 +722,29 @@ define(function(require, exports, module) {
 
             if (!path)
                 return;
-
-            var row = parseInt(clickedLine[0], 10) - 1;
-            var range = editor.getSelectionRange();
-            var offset = clickedLine[0].length + 2;
+                
+            var jump = session.getLine(currRow).match(/\s+(\d+):(\d*)/); // number:text
+            if (jump) {
+                var row = parseInt(jump[1], 10) - 1;
+                if (jump[2]) {
+                    jump = {
+                        row: row,
+                        column: parseInt(jump[2], 10) - 1
+                    };
+                } else {
+                    var range = editor.getSelectionRange();
+                    var offset = jump[0].length + 1;
+                    
+                    jump = {
+                        row: row,
+                        column: range.start.column - offset,
+                        select: {
+                            row: row,
+                            column: range.end.column - offset
+                        }
+                    };
+                }
+            }
 
             tabs.open({
                 path: path,
@@ -736,14 +752,7 @@ define(function(require, exports, module) {
                 focus: focus,
                 document: {
                     ace: {
-                        jump: {
-                            row: row,
-                            column: range.start.column - offset,
-                            select: {
-                                row: row,
-                                column: range.end.column - offset
-                            }
-                        }
+                        jump: jump
                     }
                 }
             }, function(err, tab) {
