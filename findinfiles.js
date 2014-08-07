@@ -769,9 +769,7 @@ define(function(require, exports, module) {
 
             if (content.length > 0) {
                 if (!settings.getBool("user/findinfiles/@scrolldown")) {
-                    doc.ace.$blockScrolling++;
                     doc.insert({row: doc.getLength(), column: 0}, content);
-                    doc.ace.$blockScrolling--;
                 }
                 else
                     doc.insert({row: doc.getLength(), column: 0}, content);
