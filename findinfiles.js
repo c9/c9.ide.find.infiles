@@ -18,7 +18,7 @@ define(function(require, exports, module) {
         var menus = imports.menus;
         var commands = imports.commands;
         var favs = imports["tree.favorites"];
-        var console = imports.console;
+        var c9console = imports.console;
         var layout = imports.layout;
         var tooltip = imports.tooltip;
         var tabs = imports.tabManager;
@@ -521,11 +521,11 @@ define(function(require, exports, module) {
 
             // Open Console
             if (chkSFConsole.checked)
-                console.show();
+                c9console.show();
             
             makeSearchResultsPanel(function(err, tab) {
                 if (err) {
-                    console.error("Error creating search panel");
+                    c9console.error("Error creating search panel");
                     return;
                 }
                 
@@ -710,10 +710,10 @@ define(function(require, exports, module) {
 
             var path = editor.getSession().getLine(pathRow);
 
-            if (path.charAt(path.length - 1) == ":")
-                path = path.substring(0, path.length-1);
+            if (path.charAt(path.length - 1) !== ":")
+                return;
 
-            path = path.replace(/[\\\/]+/g, "/")
+            path = path.slice(0, -1).replace(/[\\\/]+/g, "/")
                 .replace(reBasePath, "")
                 .replace(reHome, "~");
 
@@ -817,7 +817,7 @@ define(function(require, exports, module) {
             var tab = searchPanel[chkSFConsole.checked];
             
             if (!tab || !tab.loaded) {
-                var root = chkSFConsole.checked ? console : tabs;
+                var root = chkSFConsole.checked ? c9console : tabs;
                 searchPanel[chkSFConsole.checked] = root.open({
                     path: "/.c9/searchresults", // This allows the tab to be saved
                     focus: true,
