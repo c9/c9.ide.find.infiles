@@ -371,11 +371,11 @@ define(function(require, exports, module) {
                     return;
                 }
                 
+                searchRow.appendChild(winSearchInFiles);
+                winSearchInFiles.show();
                 winSearchInFiles.$ext.style.overflow = "hidden";
                 winSearchInFiles.$ext.style.height =
                     winSearchInFiles.$ext.offsetHeight + "px";
-                searchRow.appendChild(winSearchInFiles);
-                winSearchInFiles.show();
 
                 if (layout.clearFindArea(plugin, function(){
                     toggleDialog(2, isReplace, noselect);
