@@ -512,11 +512,7 @@ define(function(require, exports, module) {
             }
         }
         
-        function makeAbsolutePath(path){
-            return join(find.basePath, path);
-        }
-
-        function execFind(options) {
+        function execFind(options, cb) {
             options = options || getOptions();
 
             // Open Console
@@ -550,12 +546,14 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.startPaths = [makeAbsolutePath(filename)];
+                    options.startPaths = [filename];
                 }
                 else if (ddSFSelection.value == "open") {
                     var files = [];
                     tabs.getTabs().forEach(function(tab) {
-                        if (tab.path) files.push(tab.path);
+                        var path = tab.path;
+                        if (path && path != "/.c9/searchresults")
+                            files.push(path);
                     });
 
                     if (files.length < 1) {
@@ -564,7 +562,7 @@ define(function(require, exports, module) {
                         return;
                     }
 
-                    options.startPaths = files.map(makeAbsolutePath);
+                    options.startPaths = files;
                 }
                 else if (ddSFSelection.value == "favorites") {
                     options.startPaths = favs.getFavoritePaths();
@@ -596,7 +594,7 @@ define(function(require, exports, module) {
                         appendLines(doc, "Error executing search: " + err.message);
                         tab.classList.remove("loading");
                         tab.classList.add("error");
-                        return;
+                        return cb && cb(err);;
                     }
                     
                     currentProcess = process;
@@ -630,6 +628,7 @@ define(function(require, exports, module) {
                                 break;
                             }
                         }
+                        cb && cb();
                     });
                 });
 
@@ -910,7 +909,11 @@ define(function(require, exports, module) {
              * @param {Number} force  Set to -1 to force hide the panel, 
              *   or set to 1 to force show the panel.
              */
-            toggle: toggleDialog
+            toggle: toggleDialog,
+            /**
+             * @ignore
+             */
+            execFind: execFind
         });
 
         register(null, {

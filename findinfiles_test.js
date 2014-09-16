@@ -6,6 +6,8 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
   function (architect, chai, baseProc) {
     var expect = chai.expect;
     
+    var nak = baseProc.replace(/plugins\/.*/, "/node_modules/nak/bin/nak");
+    
     expect.setupArchitectTest([
         {
             packagePath: "plugins/c9.core/c9",
@@ -42,8 +44,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         },
         "plugins/c9.ide.editors/editor",
         {
-            packagePath: "plugins/c9.ide.editors/tabmanager",
-            testing: 2
+            packagePath: "plugins/c9.ide.editors/tabmanager"
         },
         "plugins/c9.ide.ui/focus",
         "plugins/c9.ide.editors/pane",
@@ -60,7 +61,9 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         {
             packagePath: "plugins/c9.ide.find/find.nak",
             ignore: "",
-            installPath: "~/.c9"
+            installPath: "~/.c9",
+            testing: true,
+            nak: nak
         },
         "plugins/c9.ide.keys/commands",
         "plugins/c9.fs/proc",
@@ -123,7 +126,14 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             describe("open", function(){
                 it('should open a pane with just an editor', function(done) {
                     findinfiles.toggle();
-                    done();
+                    tabs.open({path: "/file.txt", focus: true}, function(err, tab) {
+                        expect(tabs.getTabs()).length.is.gte(1);
+                        findinfiles.getElement("ddSFSelection").setValue("open");
+                        findinfiles.execFind(null, function() {
+                            expect(tabs.findTab("/.c9/searchresults").document.value).match(/^\/file.txt:/m);
+                            done();
+                        });
+                    });
                 });
             });
             
