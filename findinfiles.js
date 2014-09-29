@@ -29,7 +29,6 @@ define(function(require, exports, module) {
 
         var markup = require("text!./findinfiles.xml");
         var lib = require("plugins/c9.ide.find.replace/libsearch");
-        var join = require("path").join;
         
         var SearchMode = require("ace/mode/c9search").Mode;
 
@@ -513,6 +512,8 @@ define(function(require, exports, module) {
         }
         
         function execFind(options, cb) {
+            if (cb && typeof cb != "function")
+                cb = undefined; // called from libsearch
             options = options || getOptions();
 
             // Open Console
@@ -594,7 +595,7 @@ define(function(require, exports, module) {
                         appendLines(doc, "Error executing search: " + err.message);
                         tab.classList.remove("loading");
                         tab.classList.add("error");
-                        return cb && cb(err);;
+                        return cb && cb(err);
                     }
                     
                     currentProcess = process;
