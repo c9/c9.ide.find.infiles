@@ -397,9 +397,6 @@ define(function(require, exports, module) {
                 txtSFFind.focus();
                 txtSFFind.select();
 
-                winSearchInFiles.$ext.scrollTop = 0;
-                document.body.scrollTop = 0;
-
                 // Animate
                 anims.animateSplitBoxNode(winSearchInFiles, {
                     height: winSearchInFiles.$ext.scrollHeight + "px",
