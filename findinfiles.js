@@ -364,6 +364,14 @@ define(function(require, exports, module) {
             tooltipSearchInFiles.$ext.style.display = "none";
 
             if (!force && !winSearchInFiles.visible || force > 0) {
+                var tab = tabs.focussedTab;
+                var editor = tab && tab.editor;
+                if (editor && editor.type == "ace") {
+                    var ace = editor.ace;
+                    if (!ace.selection.isEmpty() && !ace.selection.isMultiLine())
+                        txtSFFind.setValue(ace.getCopyText());
+                }
+                
                 if (winSearchInFiles.visible && force != 2) {
                     txtSFFind.focus();
                     txtSFFind.select();
@@ -381,18 +389,6 @@ define(function(require, exports, module) {
                 })) return;
 
                 position = -1;
-    
-                var tab = tabs.focussedTab;
-                var editor = tab && tab.editor;
-                
-                if (editor && editor.type == "ace") {
-                    var ace = editor.ace;
-
-                    if (!ace.selection.isEmpty()) {
-                        txtSFFind.setValue(ace.getCopyText());
-                        libsearch.setRegexpMode(txtSFFind, chkSFRegEx.checked);
-                    }
-                }
 
                 txtSFFind.focus();
                 txtSFFind.select();
