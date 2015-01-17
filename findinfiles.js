@@ -270,7 +270,7 @@ define(function(require, exports, module) {
                     animate: false,
                     getPosition: function(){
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
-                        var left = pos[0] + cb.getLeft();
+                        var left = cb.$ext.getBoundingClientRect().left;
                         var top = pos[1];
                         return [left, top - 16];
                     }
@@ -286,7 +286,7 @@ define(function(require, exports, module) {
                     animate: false,
                     getPosition: function(){
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
-                        var left = pos[0] + node.getLeft();
+                        var left = node.$ext.getBoundingClientRect().left;
                         var top = pos[1];
                         return [left, top - 16];
                     }
