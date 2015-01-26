@@ -378,31 +378,13 @@ define(function(require, exports, module) {
                     return;
                 }
                 
-                searchRow.appendChild(winSearchInFiles);
-                winSearchInFiles.show();
-                winSearchInFiles.$ext.style.overflow = "hidden";
-                winSearchInFiles.$ext.style.height =
-                    winSearchInFiles.$ext.offsetHeight + "px";
 
-                if (layout.clearFindArea(plugin, function(){
-                    toggleDialog(2, isReplace, noselect);
-                })) return;
+                layout.setFindArea(winSearchInFiles, {}, callback)
 
                 position = -1;
 
                 txtSFFind.focus();
                 txtSFFind.select();
-
-                // Animate
-                anims.animateSplitBoxNode(winSearchInFiles, {
-                    height: winSearchInFiles.$ext.scrollHeight + "px",
-                    duration: 0.2,
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-                }, function() {
-                    winSearchInFiles.$ext.style.height = "";
-                    
-                    ui.layout.forceResize(null, true);
-                });
 
                 btnCollapse.setValue(1);
             }
@@ -410,32 +392,10 @@ define(function(require, exports, module) {
                 if (txtSFFind.getValue())
                     libsearch.saveHistory(txtSFFind.getValue(), "searchfiles");
 
-                // Animate
-                winSearchInFiles.visible = false;
-
-                winSearchInFiles.$ext.style.height =
-                    winSearchInFiles.$ext.offsetHeight + "px";
-
-                anims.animateSplitBoxNode(winSearchInFiles, {
-                    height: 0,
-                    duration: 0.2,
-                    timingFunction: "ease-in-out"
-                }, function(){
-                    winSearchInFiles.visible = true;
-                    winSearchInFiles.hide();
-                    winSearchInFiles.parentNode.removeChild(winSearchInFiles);
-
-                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-
-                    if (!noselect && tabs.focussedTab)
-                        tabs.focusTab(tabs.focussedTab); 
-
-                    setTimeout(function(){
-                        callback
-                            ? callback()
-                            : apf.layout.forceResize(null, true);
-                    }, 50);
-                });
+                if (!noselect && tabs.focussedTab)
+                    tabs.focusTab(tabs.focussedTab); 
+                
+                layout.setFindArea(null, {}, callback)
 
                 btnCollapse.setValue(0);
             }
