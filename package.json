@@ -9,14 +9,12 @@
         "url": "http://github.com/c9/c9.ide.find.infiles.git"
     },
     "plugins": {
-        "plugin": {
-            "findinfiles": {}
-        }
+        "findinfiles": {}
     },
     "categories": [
         "core"
     ],
     "licenses": [
-        ""
+        "AGPL"
     ]
 }
