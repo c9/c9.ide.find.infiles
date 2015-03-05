@@ -127,7 +127,11 @@ define(function(require, exports, module) {
                 menus.addItemToMenu(mnuCtxTree, new ui.item({
                     match: "file|folder|project",
                     command: "searchinfiles",
-                    caption: "Search In This Folder"
+                    caption: "Search In This Folder",
+                    onclick: function() {
+                        draw();
+                        ddSFSelection.setAttribute("value", "selection");
+                    }
                 }), 1030, plugin);
             });
             
