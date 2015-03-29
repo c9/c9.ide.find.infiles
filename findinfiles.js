@@ -179,46 +179,64 @@ define(function(require, exports, module) {
             txtSFFind.ace.renderer.on("autosize", resize);
             txtSFReplace.ace.renderer.on("autosize", resize);
 
-            var control;
-            txtSFReplace.on("focus", function(){
-                if (control) control.stop();
-                control = {};
-
-                // I'd rather use css anims, but they didn't seem to work
-                apf.tween.single(txtSFReplace.$ext.parentNode, {
-                    type: "boxFlex",
-                    from: txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 1,
-                    to: 3,
-                    anim: apf.tween.easeOutCubic,
-                    control: control,
-                    steps: 15,
-                    interval: 1,
-                    onfinish: function(){
-                        ui.layout.forceResize(null, true);
-                    }
-                });
-            });
-            txtSFReplace.on("blur", function(){
-                if (txtSFReplace.getValue())
+            var control = {};
+            function animate(e){
+                if (control && control.stop) control.stop();
+                
+                if (e.name == "focus") {
+                    if (e.fromElement != control.toShrink)
+                        control.toShrink = null;
+                    control.toGrow = e.currentTarget;
+                } else {
+                    control.toShrink = e.currentTarget;
+                    control.toGrow = null;
+                }
+                
+                if (control.toShrink == control.toGrow)
                     return;
-
-                if (control) control.stop();
-                control = {};
-
-                // I'd rather use css anims, but they didn't seem to work
-                apf.tween.single(txtSFReplace.$ext.parentNode, {
-                    type: "boxFlex",
-                    from: txtSFReplace.$ext.parentNode.style[apf.CSSPREFIX + "BoxFlex"] || 3,
-                    to: 1,
-                    anim: apf.tween.easeOutCubic,
-                    control: control,
-                    steps: 15,
-                    interval: 1,
-                    onfinish: function(){
-                        ui.layout.forceResize(null, true);
-                    }
+                
+                // if (focused == txtSFPatterns || focused == txtSFReplace)
+                control.timer = control.timer || setTimeout(function() {
+                    control.timer = null;
+                    startAnimation();
                 });
-            });
+            }
+            function startAnimation() {
+                applyTween(control.toGrow, true);
+                applyTween(control.toShrink, false);
+                
+                function applyTween(amlNode, grow) {
+                    if (!amlNode) return;
+                    var domNode = amlNode.$ext;
+                    var value = grow ? 3 : 1;
+                    var type = "boxFlex";
+                    if (amlNode != txtSFPatterns) {
+                        domNode = domNode.parentNode;
+                    } else {
+                        value = value == 1 ? 0 : value;
+                        if (!value)
+                            domNode.style.flexBasis = "auto";
+                        type = "boxFlexGrow";
+                    }
+                    // I'd rather use css anims, but they didn't seem to work
+                    apf.tween.single(domNode, {
+                        type: type,
+                        from: domNode.style[apf.CSS_FLEX_PROP] || (grow ? 1 : 3),
+                        to: value,
+                        anim: apf.tween.easeOutCubic,
+                        control: control,
+                        steps: 15,
+                        interval: 1,
+                        onfinish: function(){
+                            ui.layout.forceResize(null, true);
+                        }
+                    });
+                }
+            }
+            txtSFReplace.on("focus", animate);
+            txtSFReplace.on("blur", animate);
+            txtSFPatterns.on("focus", animate);
+            txtSFPatterns.on("blur", animate);
 
             commands.addCommand({
                 name: "hidesearchinfiles",
