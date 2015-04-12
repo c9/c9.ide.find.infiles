@@ -512,7 +512,14 @@ define(function(require, exports, module) {
                 
                 doc.lastHeaderRow = doc.getLength() - 3;
 
-                if (ddSFSelection.value == "active") {
+                if (ddSFSelection.value == "selection") {
+                    var selection = tree.selection;
+                    if (selection.length > 1) {
+                        options.startPaths = selection;
+                        options.path = "";
+                    }
+                }
+                else if (ddSFSelection.value == "active") {
                     var filename = lastActiveAce && lastActiveAce.isActive()
                         && lastActiveAce.path;
 
