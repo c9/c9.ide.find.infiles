@@ -364,7 +364,7 @@ define(function(require, exports, module) {
                     name = parts.pop();
             }
 
-            ddSFSelection.childNodes[1].setAttribute("caption",
+            ddSFSelection.childNodes[2].setAttribute("caption",
                 apf.escapeXML("Selection: " + (name || "/")));
 
             if (ddSFSelection.value == "selection") {
@@ -435,6 +435,8 @@ define(function(require, exports, module) {
                 // Exclude libraries, project means "user code in project", workspace means "everything"
                 pattern += "-node_modules/*";
             }
+            
+            return pattern;
         }
 
         function getOptions() {
