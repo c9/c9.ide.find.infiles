@@ -428,11 +428,19 @@ define(function(require, exports, module) {
         function searchinfiles() {
             toggleDialog(1);
         }
+        
+        function getFindPattern() {
+            var pattern = txtSFPatterns.getValue();
+            if (ddSFSelection.value == "project") {
+                // Exclude libraries, project means "user code in project", workspace means "everything"
+                pattern += "-node_modules/*";
+            }
+        }
 
         function getOptions() {
             return {
                 query: txtSFFind.getValue().replace(/\\n/g, "\n"),
-                pattern: txtSFPatterns.getValue(),
+                pattern: getFindPattern(),
                 casesensitive: chkSFMatchCase.checked,
                 regexp: chkSFRegEx.checked,
                 replaceAll: false,
