@@ -429,26 +429,25 @@ define(function(require, exports, module) {
             toggleDialog(1);
         }
         
-        function getFindPattern() {
-            var pattern = txtSFPatterns.getValue();
+        function shouldIgnoreVCSIgnores() {
             if (ddSFSelection.value == "project") {
-                // Exclude libraries, project means "user code in project", workspace means "everything"
-                pattern += "-node_modules/*";
+                return true;
             }
             
-            return pattern;
+            return false;
         }
 
         function getOptions() {
             return {
                 query: txtSFFind.getValue().replace(/\\n/g, "\n"),
-                pattern: getFindPattern(),
+                pattern: txtSFPatterns.getValue(),
                 casesensitive: chkSFMatchCase.checked,
                 regexp: chkSFRegEx.checked,
                 replaceAll: false,
                 replacement: txtSFReplace.getValue(),
                 wholeword: chkSFWholeWords.checked,
-                path: getTargetFolderPath()
+                path: getTargetFolderPath(),
+                addVCSIgnores: shouldIgnoreVCSIgnores()
             };
         }
         
