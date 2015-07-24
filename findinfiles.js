@@ -364,6 +364,9 @@ define(function(require, exports, module) {
                     name = parts.pop();
             }
 
+            ddSFSelection.childNodes[1].setAttribute("caption",
+                apf.escapeXML("Project (excludes .gitignore'd)"));
+
             ddSFSelection.childNodes[2].setAttribute("caption",
                 apf.escapeXML("Selection: " + (name || "/")));
 
@@ -429,12 +432,12 @@ define(function(require, exports, module) {
             toggleDialog(1);
         }
         
-        function shouldIgnoreVCSIgnores() {
+        function shouldSearchVCSIgnores() {
             if (ddSFSelection.value == "project") {
-                return true;
+                return false;
             }
             
-            return false;
+            return true;
         }
 
         function getOptions() {
@@ -447,7 +450,7 @@ define(function(require, exports, module) {
                 replacement: txtSFReplace.getValue(),
                 wholeword: chkSFWholeWords.checked,
                 path: getTargetFolderPath(),
-                addVCSIgnores: shouldIgnoreVCSIgnores()
+                addVCSIgnores: !shouldSearchVCSIgnores()
             };
         }
         
@@ -786,8 +789,10 @@ define(function(require, exports, module) {
             if (options.replaceAll)
                 replacement = "\x01, replaced as \x01" + trim(options.replacement);
 
+            if (ddSFSelection.value == "workspace")
+                path = "your entire workspace";
             if (ddSFSelection.value == "project")
-                path = "the entire project";
+                path = "project files (exluding .gitignore'd files)";
             else if (ddSFSelection.value == "active")
                 path = "the active file";
             else if (ddSFSelection.value == "open")
