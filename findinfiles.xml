@@ -15,8 +15,8 @@
               
             <a:codebox id="txtSFPatterns" tabindex="1001" skin="searchbox" width="80" initial-message="*.*, -.*" label="Wildcards accepted. Prefix with - to exclude a pattern. Use , to split patterns" focusselect="true"/>
             <a:dropdown id="ddSFSelection" skin="dropdown-dark-glossy" height="27" minwidth="80" value="selection">
-                <a:item caption="Workspace" value="workspace" title="Search everything" />
-                <a:item caption="Project" value="project" title="Search everything excluding files in your .gitignore" />
+                <a:item caption="Workspace" value="workspace" />
+                <a:item caption="Project" value="project" />
                 <a:item caption="Selection" value="selection" />
                 <a:item caption="Favorites" value="favorites" />
                 <a:item caption="Active File" value="active" />
