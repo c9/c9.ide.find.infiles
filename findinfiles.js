@@ -792,7 +792,7 @@ define(function(require, exports, module) {
             if (ddSFSelection.value == "workspace")
                 path = "your entire workspace";
             if (ddSFSelection.value == "project")
-                path = "project files (exluding .gitignore'd files)";
+                path = "project files (excludes .gitignore'd files)";
             else if (ddSFSelection.value == "active")
                 path = "the active file";
             else if (ddSFSelection.value == "open")
