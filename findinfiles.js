@@ -80,6 +80,7 @@ define(function(require, exports, module) {
                     ["consolelaunch", "false"],
                     ["fullpath", "false"],
                     ["scrolldown", "false"],
+                    ["project", "/"],
                     ["clear", "true"]
                 ]);
             }, plugin);
@@ -88,6 +89,11 @@ define(function(require, exports, module) {
                "General" : {
                    "Find in Files" : {
                        position: 30,
+                        "Search In This Path When 'Project' Is Selected" : {
+                            type: "textbox",
+                            position: 100,
+                            path: "user/findinfiles/@project"
+                        },
                         "Show Full Path in Results" : {
                             type: "checkbox",
                             position: 100,
@@ -466,6 +472,9 @@ define(function(require, exports, module) {
                 if (!path) {
                     path = getSelectedTreePath();
                 }
+            }
+            else if (ddSFSelection.value == "project") {
+                path = settings.get("user/findinfiles/@project") || "/";
             }
             else {
                 path = "/";
