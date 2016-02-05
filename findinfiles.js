@@ -502,7 +502,7 @@ define(function(require, exports, module) {
                     },
                     function(all, cancel){ // No
                     },
-                    { all: false }
+                    { all: false, yes: "Replace All", no: "Abort" }
                 );
             }
         }
