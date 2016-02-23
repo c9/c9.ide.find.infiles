@@ -3,7 +3,7 @@ define(function(require, exports, module) {
         "Plugin", "c9", "util", "settings", "ui", "layout", "findreplace", 
         "find", "anims", "menus", "tabManager", "commands", "tooltip", 
         "tree", "apf", "console", "preferences", "dialog.question", 
-        "tree.favorites"
+        "tree.favorites", "save"
     ];
     main.provides = ["findinfiles"];
     return main;
@@ -25,6 +25,7 @@ define(function(require, exports, module) {
         var tree = imports.tree;
         var prefs = imports.preferences;
         var find = imports.find;
+        var save = imports.save;
         var question = imports["dialog.question"].show;
 
         var markup = require("text!./findinfiles.xml");
@@ -485,7 +486,9 @@ define(function(require, exports, module) {
         function execReplace(options) {
             if (options) {
                 options.replaceAll = true;
-                execFind(options);
+                save.saveAll({skipNewFiles: true}, function() {
+                    execFind(options);
+                });
                 return;
             }
             
