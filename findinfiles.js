@@ -75,7 +75,8 @@ define(function(require, exports, module) {
                     ["regex", "false"],
                     ["matchcase", "false"],
                     ["wholeword", "false"],
-                    ["console", "true"]
+                    ["console", "true"],
+                    ["scope", "selection"],
                 ]);
                 settings.setDefaults("user/findinfiles", [
                     ["consolelaunch", "false"],
@@ -320,6 +321,11 @@ define(function(require, exports, module) {
                         return [left, top - 16];
                     }
                 }, plugin);
+            });
+            
+            ddSFSelection.setAttribute("value", settings.get("state/findinfiles/@scope"));
+            ddSFSelection.on("afterselect", function() {
+                settings.set("state/findinfiles/@scope", ddSFSelection.value);
             });
             
             // Offline
