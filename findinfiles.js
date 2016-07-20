@@ -780,11 +780,7 @@ define(function(require, exports, module) {
                 content = content.join("\n");
 
             if (content.length > 0) {
-                if (!settings.getBool("user/findinfiles/@scrolldown")) {
-                    doc.insert({row: doc.getLength(), column: 0}, content);
-                }
-                else
-                    doc.insert({row: doc.getLength(), column: 0}, content);
+                doc.insert({row: doc.getLength(), column: 0}, content);
             }
         }
 
