@@ -29,7 +29,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         "plugins/c9.ide.ui/menus",
         {
             packagePath: "plugins/c9.core/settings",
-            settings: { user: { general: { animateui: true } } }
+            settings: { user: { general: { animateui: true }}}
         },
         "plugins/c9.core/api.js",
         {
@@ -87,7 +87,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
         var tabs = imports.tabManager;
         
         function getTabHtml(tab) {
-            return tab.pane.aml.getPage("editor::" + tab.editorType).$ext
+            return tab.pane.aml.getPage("editor::" + tab.editorType).$ext;
         }
         
         expect.html.setConstructor(function(tab) {
@@ -113,10 +113,10 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
                 done();
             });
             
-            describe("open", function(){
+            describe("open", function() {
                 it('should open a pane with just an editor', function(done) {
                     findinfiles.toggle();
-                    tabs.open({path: "/file.txt", focus: true}, function(err, tab) {
+                    tabs.open({ path: "/file.txt", focus: true }, function(err, tab) {
                         expect(tabs.getTabs()).length.is.gte(1);
                         findinfiles.getElement("ddSFSelection").setValue("open");
                         findinfiles.execFind(null, function() {
@@ -128,7 +128,7 @@ require(["lib/architect/architect", "lib/chai/chai", "/vfs-root"],
             });
             
             if (!onload.remain) {
-                describe("unload", function(){
+                describe("unload", function() {
                     
                     it('should open a pane with just an editor', function(done) {
                         findinfiles.unload();

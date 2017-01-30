@@ -38,7 +38,7 @@ define(function(require, exports, module) {
         var plugin = new Plugin("Ajax.org", main.consumes);
         var emit = plugin.getEmitter();
 
-        var libsearch = lib(settings, execFind, toggleDialog, function(){});
+        var libsearch = lib(settings, execFind, toggleDialog, function() {});
 
         // Make ref available for other search implementations (specifically searchreplace)
         lib.findinfiles = plugin;
@@ -52,14 +52,14 @@ define(function(require, exports, module) {
         var btnSFReplaceAll, btnCollapse, currentProcess;
 
         var loaded = false;
-        function load(){
+        function load() {
             if (loaded) return false;
             loaded = true;
 
             commands.addCommand({
                 name: "searchinfiles",
                 hint: "search for a string through all files in the current workspace",
-                bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
+                bindKey: { mac: "Shift-Command-F", win: "Ctrl-Shift-F" },
                 exec: function () {
                     toggleDialog(1);
                 }
@@ -88,30 +88,30 @@ define(function(require, exports, module) {
             }, plugin);
 
             prefs.add({
-               "General" : {
-                   "Find in Files" : {
+               "General": {
+                   "Find in Files": {
                        position: 30,
-                        "Search In This Path When 'Project' Is Selected" : {
+                        "Search In This Path When 'Project' Is Selected": {
                             type: "textbox",
                             position: 100,
                             path: "user/findinfiles/@project"
                         },
-                        "Show Full Path in Results" : {
+                        "Show Full Path in Results": {
                             type: "checkbox",
                             position: 100,
                             path: "user/findinfiles/@fullpath"
                         },
-                        "Clear Results Before Each Search" : {
+                        "Clear Results Before Each Search": {
                             type: "checkbox",
                             position: 100,
                             path: "user/findinfiles/@clear"
                         },
-                        "Scroll Down as Search Results Come In" : {
+                        "Scroll Down as Search Results Come In": {
                             type: "checkbox",
                             position: 100,
                             path: "user/findinfiles/@scrolldown"
                         },
-                        "Open Files when Navigating Results with ↓ ↑" : {
+                        "Open Files when Navigating Results with ↓ ↑": {
                             type: "checkbox",
                             position: 100,
                             path: "user/findinfiles/@consolelaunch"
@@ -148,7 +148,7 @@ define(function(require, exports, module) {
         }
 
         var drawn = false;
-        function draw(){
+        function draw() {
             if (drawn) return;
             drawn = true;
 
@@ -170,12 +170,12 @@ define(function(require, exports, module) {
             btnCollapse = plugin.getElement("btnCollapse");
             tooltipSearchInFiles = plugin.getElement("tooltipSearchInFiles");
 
-            btnSFFind.on("click", function(){ execFind(); });
-            btnSFReplaceAll.on("click", function(){ execReplace(); });
-            btnCollapse.on("click", function(){ toggleDialog(-1); });
+            btnSFFind.on("click", function() { execFind(); });
+            btnSFReplaceAll.on("click", function() { execReplace(); });
+            btnCollapse.on("click", function() { toggleDialog(-1); });
 
             var first = 0;
-            function resize(){
+            function resize() {
                 if (first++ < 2) { return; } // Skip first 2 calls
                 var h = winSearchInFiles.$ext.scrollHeight;
                 if (Math.abs(winSearchInFiles.height - h) < 1) { return; }
@@ -188,7 +188,7 @@ define(function(require, exports, module) {
             txtSFReplace.ace.renderer.on("autosize", resize);
 
             var control = {};
-            function animate(e){
+            function animate(e) {
                 if (control && control.stop) control.stop();
                 
                 if (e.name == "focus") {
@@ -235,7 +235,7 @@ define(function(require, exports, module) {
                         control: control,
                         steps: 15,
                         interval: 1,
-                        onfinish: function(){
+                        onfinish: function() {
                             ui.layout.forceResize(null, true);
                         }
                     });
@@ -248,7 +248,7 @@ define(function(require, exports, module) {
 
             commands.addCommand({
                 name: "hidesearchinfiles",
-                bindKey: {mac: "ESC", win: "ESC"},
+                bindKey: { mac: "ESC", win: "ESC" },
                 isAvailable: function(editor) {
                     return winSearchInFiles.visible;
                 },
@@ -276,7 +276,7 @@ define(function(require, exports, module) {
 
             var kb = libsearch.addSearchKeyboardHandler(txtSFReplace, "replacefiles");
             kb.bindKeys({
-                "Return|Shift-Return": function(){ execReplace(); }
+                "Return|Shift-Return": function() { execReplace(); }
             });
 
             kb = libsearch.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
@@ -298,7 +298,7 @@ define(function(require, exports, module) {
                     timeout: 0,
                     tooltip: tt,
                     animate: false,
-                    getPosition: function(){
+                    getPosition: function() {
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = cb.$ext.getBoundingClientRect().left;
                         var top = pos[1];
@@ -314,7 +314,7 @@ define(function(require, exports, module) {
                     timeout: 0,
                     tooltip: tt,
                     animate: false,
-                    getPosition: function(){
+                    getPosition: function() {
                         var pos = ui.getAbsolutePosition(winSearchInFiles.$ext);
                         var left = node.$ext.getBoundingClientRect().left;
                         var top = pos[1];
@@ -417,7 +417,7 @@ define(function(require, exports, module) {
                 }
                 
 
-                layout.setFindArea(winSearchInFiles, {}, callback)
+                layout.setFindArea(winSearchInFiles, {}, callback);
 
                 position = -1;
 
@@ -433,7 +433,7 @@ define(function(require, exports, module) {
                 if (!noselect && tabs.focussedTab)
                     tabs.focusTab(tabs.focussedTab); 
                 
-                layout.setFindArea(null, {}, callback)
+                layout.setFindArea(null, {}, callback);
 
                 btnCollapse.setValue(0);
             }
@@ -492,7 +492,7 @@ define(function(require, exports, module) {
         function execReplace(options) {
             if (options) {
                 options.replaceAll = true;
-                save.saveAll({skipNewFiles: true}, function() {
+                save.saveAll({ skipNewFiles: true }, function() {
                     execFind(options);
                 });
                 return;
@@ -506,10 +506,10 @@ define(function(require, exports, module) {
                     "Replace in files",
                     "Replace all occurrences of " + (options.query) + " in " + options.path,
                     "Do you want continue? (This change cannot be undone)",
-                    function(all){ // Yes
+                    function(all) { // Yes
                         execReplace(options);
                     },
-                    function(all, cancel){ // No
+                    function(all, cancel) { // No
                     },
                     { all: false, yes: "Replace Text", no: "Cancel" }
                 );
@@ -699,7 +699,7 @@ define(function(require, exports, module) {
                 acesession.on("changeEditor", updateEditorEventListeners);
                 var e = acesession.c9doc ? acesession.c9doc.tab.editor : doc;
                 if (e && e.ace && e.ace.session === acesession)
-                    updateEditorEventListeners({editor: e.ace});
+                    updateEditorEventListeners({ editor: e.ace });
             }
         }
 
@@ -714,7 +714,7 @@ define(function(require, exports, module) {
 
             // "string" type is the parent filename
             var pathRow = currRow + 1;
-            while (pathRow --> 0) {
+            while (pathRow -- > 0) {
                 var token = session.getTokenAt(pathRow, 0);
                 if (token && token.type.indexOf("string") != -1)
                     break;
@@ -780,7 +780,7 @@ define(function(require, exports, module) {
                 content = content.join("\n");
 
             if (content.length > 0) {
-                doc.insert({row: doc.getLength(), column: 0}, content);
+                doc.insert({ row: doc.getLength(), column: 0 }, content);
             }
         }
 
@@ -838,7 +838,7 @@ define(function(require, exports, module) {
                             ignoreSave: true,
                             newfile: true
                         },
-                        "ace" : {
+                        "ace": {
                             customSyntax: "c9search",
                             options: {}
                         }
@@ -846,7 +846,7 @@ define(function(require, exports, module) {
                     editorType: "ace",
                     name: "searchResults"
                 }, function(err, tab, done) {
-                    tab.on("unload", function(){
+                    tab.on("unload", function() {
                         if (currentProcess)
                             currentProcess.kill();
                     });
@@ -866,16 +866,16 @@ define(function(require, exports, module) {
 
         /***** Lifecycle *****/
 
-        plugin.on("load", function(){
+        plugin.on("load", function() {
             load();
         });
-        plugin.on("enable", function(){
+        plugin.on("enable", function() {
 
         });
-        plugin.on("disable", function(){
+        plugin.on("disable", function() {
 
         });
-        plugin.on("unload", function(){
+        plugin.on("unload", function() {
             loaded = false;
         });
 
@@ -913,7 +913,7 @@ define(function(require, exports, module) {
             /**
              * 
              */
-            get aml(){ return winSearchInFiles; },
+            get aml() { return winSearchInFiles; },
             
             /**
              * Toggles the visibility of the search in files panel.
